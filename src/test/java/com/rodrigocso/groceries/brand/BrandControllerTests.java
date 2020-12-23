@@ -1,21 +1,11 @@
 package com.rodrigocso.groceries.brand;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-
-
-import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,20 +17,34 @@ public class BrandControllerTests {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    private ObjectMapper objectMapper;
+    private String endpointUrl;
 
     @BeforeEach
-    public void beforeEach() throws Exception {
-        this.restTemplate.postForEntity("http://localhost:" + port + "/brands", new Brand("Amazon"), Brand.class);
-        this.restTemplate.postForEntity("http://localhost:" + port + "/brands", new Brand("Apple"), Brand.class);
-        this.restTemplate.postForEntity("http://localhost:" + port + "/brands", new Brand("Google"), Brand.class);
-        this.restTemplate.postForEntity("http://localhost:" + port + "/brands", new Brand("Microsoft"), Brand.class);
+    public void beforeEach() {
+        endpointUrl = "http://localhost:" + port + "/brands";
+
+        restTemplate.postForEntity(endpointUrl, new Brand("Amazon"), Brand.class);
+        restTemplate.postForEntity(endpointUrl, new Brand("Apple"), Brand.class);
+        restTemplate.postForEntity(endpointUrl, new Brand("Google"), Brand.class);
+        restTemplate.postForEntity(endpointUrl, new Brand("Microsoft"), Brand.class);
     }
 
     @Test
-    public void getBrandsShouldReturnBrandList() throws Exception {
-        assertThat(this.restTemplate.getForEntity("http://localhost:" + port + "/brands", Brand[].class).getBody())
-            .isNotEmpty()
-            .hasOnlyElementsOfType(Brand.class);
+    public void getBrandsShouldReturnBrandList() {
+        assertThat(restTemplate.getForEntity(endpointUrl, Brand[].class).getBody())
+                .isNotEmpty()
+                .hasOnlyElementsOfType(Brand.class);
+    }
+
+    @Test
+    public void postBrandWithBlankNameShouldReturnHttpBadRequest() {
+        assertThat(this.restTemplate.postForEntity(endpointUrl, new Brand(), Brand.class).getStatusCodeValue())
+                .isEqualTo(400);
+    }
+
+    @Test
+    public void getBrandById() {
+        assertThat(restTemplate.getForEntity(endpointUrl + "/5", Brand.class).getStatusCodeValue())
+                .isEqualTo(404);
     }
 }
