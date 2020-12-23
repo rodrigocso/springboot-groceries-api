@@ -1,47 +1,20 @@
 package com.rodrigocso.groceries.brand;
 
-import org.springframework.http.HttpStatus;
+import com.rodrigocso.groceries.AbstractController;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 import javax.validation.Valid;
 
 @RestController
 @RequestMapping(path = "/brands")
-public class BrandController {
+public class BrandController extends AbstractController {
     private final BrandRepository brandRepository;
 
     public BrandController(BrandRepository brandRepository) {
         this.brandRepository = brandRepository;
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        return errors;
-    }
-
-    @PostMapping
-    public ResponseEntity<Brand> addNewBrand(@Valid @RequestBody Brand newBrand) {
-         Brand savedBrand = this.brandRepository.save(newBrand);
-         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                 .path("/{id}")
-                 .buildAndExpand(savedBrand.getId())
-                 .toUri();
-         return ResponseEntity.created(location).body(savedBrand);
     }
 
     @GetMapping
@@ -51,9 +24,27 @@ public class BrandController {
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<Brand> findBrandById(@PathVariable Integer id) {
-        Optional<Brand> brand = brandRepository.findById(id);
-        return brandRepository.findById(id).isPresent() ?
-                ResponseEntity.ok(brand.get()) :
-                ResponseEntity.notFound().build();
+        return brandRepository
+                .findById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping(path = "/search")
+    public ResponseEntity<Brand> findBrandByName(@RequestParam String name) {
+        return brandRepository
+                .findByNameIgnoreCase(name)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PostMapping
+    public ResponseEntity<Brand> addBrand(@Valid @RequestBody Brand newBrand) {
+        Brand savedBrand = this.brandRepository.save(newBrand);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedBrand.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(savedBrand);
     }
 }

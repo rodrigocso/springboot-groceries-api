@@ -1,9 +1,6 @@
 package com.rodrigocso.groceries.brand;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -13,8 +10,8 @@ public class Brand {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @NotBlank(message = "Name cannot be empty")
-    @NotNull(message = "Name is required")
+    @Column(unique = true)
+    @NotBlank(message = "IS_REQUIRED")
     private String name;
 
     public Brand() {}

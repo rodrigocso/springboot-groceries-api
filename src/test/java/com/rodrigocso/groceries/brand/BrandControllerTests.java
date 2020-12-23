@@ -47,4 +47,10 @@ public class BrandControllerTests {
         assertThat(restTemplate.getForEntity(endpointUrl + "/5", Brand.class).getStatusCodeValue())
                 .isEqualTo(404);
     }
+
+    @Test
+    public void post_DuplicatedBrand_ShouldReturnError() {
+        assertThat(restTemplate.postForEntity(endpointUrl, new Brand("Apple"), Brand.class).getStatusCodeValue())
+                .isEqualTo(422);
+    }
 }
