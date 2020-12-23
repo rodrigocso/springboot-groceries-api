@@ -3,7 +3,13 @@ package com.rodrigocso.groceries.brand;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 @Entity
+@Data
 public class Brand {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -16,22 +22,6 @@ public class Brand {
     public Brand() {}
 
     public Brand(String name) {
-        this.name = name;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
         this.name = name;
     }
 }

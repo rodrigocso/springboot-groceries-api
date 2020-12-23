@@ -49,8 +49,8 @@ public class BrandControllerTests {
     }
 
     @Test
-    public void post_DuplicatedBrand_ShouldReturnError() {
+    public void post_DuplicatedBrand_ShouldReturnConflict() {
         assertThat(restTemplate.postForEntity(endpointUrl, new Brand("Apple"), Brand.class).getStatusCodeValue())
-                .isEqualTo(422);
+                .isEqualTo(409);
     }
 }
