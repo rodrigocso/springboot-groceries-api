@@ -30,20 +30,20 @@ public class BrandControllerTests {
     }
 
     @Test
-    public void getBrandsShouldReturnBrandList() {
+    public void get_BrandsAlreadySaved_ShouldReturnNonEmptyBrandArray() {
         assertThat(restTemplate.getForEntity(endpointUrl, Brand[].class).getBody())
                 .isNotEmpty()
                 .hasOnlyElementsOfType(Brand.class);
     }
 
     @Test
-    public void postBrandWithBlankNameShouldReturnHttpBadRequest() {
+    public void post_BrandWithBlankName_ShouldReturnBadRequest() {
         assertThat(this.restTemplate.postForEntity(endpointUrl, new Brand(), Brand.class).getStatusCodeValue())
                 .isEqualTo(400);
     }
 
     @Test
-    public void getBrandById() {
+    public void getById_BrandDoesNotExist_ShouldReturnNotFound() {
         assertThat(restTemplate.getForEntity(endpointUrl + "/5", Brand.class).getStatusCodeValue())
                 .isEqualTo(404);
     }
