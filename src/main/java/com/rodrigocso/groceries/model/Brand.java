@@ -1,4 +1,4 @@
-package com.rodrigocso.groceries.brand;
+package com.rodrigocso.groceries.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;

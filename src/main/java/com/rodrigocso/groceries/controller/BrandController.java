@@ -1,6 +1,7 @@
-package com.rodrigocso.groceries.brand;
+package com.rodrigocso.groceries.controller;
 
-import com.rodrigocso.groceries.AbstractController;
+import com.rodrigocso.groceries.model.Brand;
+import com.rodrigocso.groceries.repository.BrandRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
