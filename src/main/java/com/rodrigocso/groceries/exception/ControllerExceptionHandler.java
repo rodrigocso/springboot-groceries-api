@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.HashMap;
@@ -25,7 +26,7 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         ex.getBindingResult().getAllErrors().forEach((error) ->
                 body.put(((FieldError) error).getField(), error.getDefaultMessage()));
 
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.badRequest().body(body);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

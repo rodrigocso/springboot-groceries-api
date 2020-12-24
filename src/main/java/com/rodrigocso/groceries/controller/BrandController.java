@@ -1,7 +1,7 @@
 package com.rodrigocso.groceries.controller;
 
-import com.rodrigocso.groceries.model.Brand;
-import com.rodrigocso.groceries.repository.BrandRepository;
+import com.rodrigocso.groceries.dto.BrandDTO;
+import com.rodrigocso.groceries.service.facade.BrandFacade;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -12,36 +12,30 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping(path = "/brands")
 public class BrandController {
-    private final BrandRepository brandRepository;
+    private final BrandFacade brandFacade;
 
-    public BrandController(BrandRepository brandRepository) {
-        this.brandRepository = brandRepository;
+    public BrandController(BrandFacade brandFacade) {
+        this.brandFacade = brandFacade;
     }
 
     @GetMapping
-    public ResponseEntity<Iterable<Brand>> getAllBrands() {
-        return ResponseEntity.ok(brandRepository.findAll());
+    public ResponseEntity<Iterable<BrandDTO>> findAll() {
+        return ResponseEntity.ok(brandFacade.findAll());
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<Brand> findBrandById(@PathVariable Integer id) {
-        return brandRepository
-                .findById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<BrandDTO> findById(@PathVariable Integer id) {
+        return ResponseEntity.ok(brandFacade.findById(id));
     }
 
     @GetMapping(path = "/search")
-    public ResponseEntity<Brand> findBrandByName(@RequestParam String name) {
-        return brandRepository
-                .findByNameIgnoreCase(name)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<Iterable<BrandDTO>> findByNameContaining(@RequestParam String partialName) {
+        return ResponseEntity.ok(brandFacade.findByNameContaining(partialName));
     }
 
     @PostMapping
-    public ResponseEntity<Brand> addBrand(@Valid @RequestBody Brand newBrand) {
-        Brand savedBrand = this.brandRepository.save(newBrand);
+    public ResponseEntity<BrandDTO> addBrand(@Valid @RequestBody BrandDTO newBrand) {
+        BrandDTO savedBrand = brandFacade.save(newBrand);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(savedBrand.getId())

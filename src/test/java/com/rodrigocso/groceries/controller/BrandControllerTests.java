@@ -1,5 +1,6 @@
 package com.rodrigocso.groceries.controller;
 
+import com.rodrigocso.groceries.dto.BrandDTO;
 import com.rodrigocso.groceries.model.Brand;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,18 +24,13 @@ public class BrandControllerTests {
     @BeforeEach
     public void beforeEach() {
         endpointUrl = "http://localhost:" + port + "/brands";
-
-        restTemplate.postForEntity(endpointUrl, new Brand("Amazon"), Brand.class);
-        restTemplate.postForEntity(endpointUrl, new Brand("Apple"), Brand.class);
-        restTemplate.postForEntity(endpointUrl, new Brand("Google"), Brand.class);
-        restTemplate.postForEntity(endpointUrl, new Brand("Microsoft"), Brand.class);
     }
 
     @Test
     public void get_BrandsAlreadySaved_ShouldReturnNonEmptyBrandArray() {
-        assertThat(restTemplate.getForEntity(endpointUrl, Brand[].class).getBody())
+        assertThat(restTemplate.getForEntity(endpointUrl, BrandDTO[].class).getBody())
                 .isNotEmpty()
-                .hasOnlyElementsOfType(Brand.class);
+                .hasOnlyElementsOfType(BrandDTO.class);
     }
 
     @Test
@@ -51,7 +47,7 @@ public class BrandControllerTests {
 
     @Test
     public void post_DuplicatedBrand_ShouldReturnConflict() {
-        assertThat(restTemplate.postForEntity(endpointUrl, new Brand("Apple"), Brand.class).getStatusCodeValue())
+        assertThat(restTemplate.postForEntity(endpointUrl, new Brand("Kirkland"), Brand.class).getStatusCodeValue())
                 .isEqualTo(409);
     }
 }
