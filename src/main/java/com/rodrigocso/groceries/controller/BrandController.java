@@ -11,7 +11,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping(path = "/brands")
-public class BrandController extends AbstractController {
+public class BrandController {
     private final BrandRepository brandRepository;
 
     public BrandController(BrandRepository brandRepository) {
