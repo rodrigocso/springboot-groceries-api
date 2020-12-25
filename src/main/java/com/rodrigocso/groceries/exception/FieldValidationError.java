@@ -1,10 +1,12 @@
 package com.rodrigocso.groceries.exception;
 
 public class FieldValidationError {
-    private final String field;
-    private final String message;
+    private String field;
+    private String message;
 
-    FieldValidationError(String field, String message) {
+    public FieldValidationError() {}
+
+    public FieldValidationError(String field, String message) {
         this.field = field;
         this.message = message;
     }
