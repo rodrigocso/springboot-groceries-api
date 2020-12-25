@@ -1,39 +1,41 @@
 package com.rodrigocso.groceries.exception;
 
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
-public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
+class ControllerExceptionHandler {
 
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-                                                                  HttpHeaders headers, HttpStatus status,
-                                                                  WebRequest request) {
-        Map<String, Object> body = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) ->
-                body.put(((FieldError) error).getField(), error.getDefaultMessage()));
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    ErrorResponse handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
+        ErrorResponse errorResponse = new ErrorResponse();
 
-        return ResponseEntity.badRequest().body(body);
+        for (FieldError fieldError : e.getBindingResult().getFieldErrors()) {
+            errorResponse.getFieldErrors().add(
+                    new FieldValidationError(fieldError.getField(), fieldError.getDefaultMessage()));
+        }
+
+        return errorResponse;
     }
 
+    @ResponseBody
+    @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Object> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+    Map<String, String> handleDataIntegrityViolation(DataIntegrityViolationException e) {
         Map<String, String> body = new HashMap<>();
         body.put("error", "ENTITY_EXISTS");
 
-        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+        return body;
     }
 }
