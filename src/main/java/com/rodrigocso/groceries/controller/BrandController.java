@@ -1,6 +1,6 @@
 package com.rodrigocso.groceries.controller;
 
-import com.rodrigocso.groceries.dto.BrandDTO;
+import com.rodrigocso.groceries.dto.BrandDto;
 import com.rodrigocso.groceries.service.facade.BrandFacade;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,27 +19,32 @@ public class BrandController {
     }
 
     @GetMapping
-    public ResponseEntity<Iterable<BrandDTO>> findAll() {
+    public ResponseEntity<Iterable<BrandDto>> findAll() {
         return ResponseEntity.ok(brandFacade.findAll());
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<BrandDTO> findById(@PathVariable Integer id) {
+    public ResponseEntity<BrandDto> findById(@PathVariable Integer id) {
         return ResponseEntity.ok(brandFacade.findById(id));
     }
 
     @GetMapping(path = "/search")
-    public ResponseEntity<Iterable<BrandDTO>> findByNameContaining(@RequestParam String partialName) {
+    public ResponseEntity<Iterable<BrandDto>> findByNameContaining(@RequestParam String partialName) {
         return ResponseEntity.ok(brandFacade.findByNameContaining(partialName));
     }
 
     @PostMapping
-    public ResponseEntity<BrandDTO> addBrand(@Valid @RequestBody BrandDTO newBrand) {
-        BrandDTO savedBrand = brandFacade.save(newBrand);
+    public ResponseEntity<BrandDto> addBrand(@Valid @RequestBody BrandDto newBrand) {
+        BrandDto savedBrand = brandFacade.save(newBrand);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(savedBrand.getId())
                 .toUri();
         return ResponseEntity.created(location).body(savedBrand);
+    }
+
+    @PutMapping(path = "/{id}")
+    public ResponseEntity<BrandDto> updateBrand(@Valid @RequestBody BrandDto brand, @PathVariable Integer id) {
+        return ResponseEntity.ok(brandFacade.update(id, brand));
     }
 }

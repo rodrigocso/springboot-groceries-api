@@ -1,6 +1,6 @@
 package com.rodrigocso.groceries.service.facade;
 
-import com.rodrigocso.groceries.dto.BrandDTO;
+import com.rodrigocso.groceries.dto.BrandDto;
 import com.rodrigocso.groceries.repository.BrandRepository;
 import com.rodrigocso.groceries.service.mapper.BrandMapper;
 import org.springframework.http.HttpStatus;
@@ -19,26 +19,37 @@ public class BrandFacade {
         this.brandRepository = brandRepository;
     }
 
-    public List<BrandDTO> findAll() {
-        return StreamSupport.stream(brandRepository.findAll().spliterator(), false)
-                .map(BrandMapper::toBrandDTO)
+    public List<BrandDto> findAll() {
+        return brandRepository.findAll().stream()
+                .map(BrandMapper::toBrandDto)
                 .collect(Collectors.toList());
     }
 
-    public BrandDTO findById(Integer id) {
+    public BrandDto findById(Integer id) {
         return brandRepository.findById(id)
-                .map(BrandMapper::toBrandDTO)
+                .map(BrandMapper::toBrandDto)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    public List<BrandDTO> findByNameContaining(String partialName) {
-        return StreamSupport
-                .stream(brandRepository.findByNameContainingIgnoreCase(partialName).spliterator(), false)
-                .map(BrandMapper::toBrandDTO)
+    public List<BrandDto> findByNameContaining(String partialName) {
+        return brandRepository.findByNameContainingIgnoreCase(partialName).stream()
+                .map(BrandMapper::toBrandDto)
                 .collect(Collectors.toList());
     }
 
-    public BrandDTO save(BrandDTO dto) {
-        return BrandMapper.toBrandDTO(brandRepository.save(BrandMapper.toBrand(dto)));
+    public BrandDto save(BrandDto dto) {
+        return BrandMapper.toBrandDto(brandRepository.save(BrandMapper.toBrand(dto)));
+    }
+
+    public BrandDto update(Integer id, BrandDto dto) {
+        return brandRepository.findById(id)
+                .map((brand) -> {
+                    dto.setId(brand.getId());
+                    return dto;
+                })
+                .map(BrandMapper::toBrand)
+                .map(brandRepository::save)
+                .map(BrandMapper::toBrandDto)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 }
