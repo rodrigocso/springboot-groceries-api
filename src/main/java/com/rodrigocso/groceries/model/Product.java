@@ -13,7 +13,8 @@ public class Product {
     @NotBlank(message = "IS_REQUIRED")
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_id")
     private Brand brand;
 
     public Product() {}

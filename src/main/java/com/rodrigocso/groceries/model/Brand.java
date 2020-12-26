@@ -2,6 +2,8 @@ package com.rodrigocso.groceries.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 public class Brand {
@@ -12,6 +14,9 @@ public class Brand {
     @Column(unique = true)
     @NotBlank(message = "IS_REQUIRED")
     private String name;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private Set<Product> products = new LinkedHashSet<>();
 
     public Brand() {}
 
@@ -33,5 +38,13 @@ public class Brand {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Set<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(Set<Product> products) {
+        this.products = products;
     }
 }
