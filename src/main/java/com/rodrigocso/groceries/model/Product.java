@@ -4,12 +4,12 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"brand_id", "name"}))
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @Column(unique = true)
     @NotBlank(message = "IS_REQUIRED")
     private String name;
 
@@ -18,11 +18,6 @@ public class Product {
     private Brand brand;
 
     public Product() {}
-
-    public Product(String name, Brand brand) {
-        this.name = name;
-        this.brand = brand;
-    }
 
     public Integer getId() {
         return id;
