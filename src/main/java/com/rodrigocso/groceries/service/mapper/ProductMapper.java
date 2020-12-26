@@ -1,18 +1,18 @@
 package com.rodrigocso.groceries.service.mapper;
 
-import com.rodrigocso.groceries.dto.ProductDTO;
+import com.rodrigocso.groceries.dto.ProductDto;
 import com.rodrigocso.groceries.model.Product;
 
 public class ProductMapper {
-    public static ProductDTO toProductDTO(Product product) {
-        ProductDTO dto = new ProductDTO();
+    public static ProductDto toProductDto(Product product) {
+        ProductDto dto = new ProductDto();
         dto.setId(product.getId());
         dto.setName(product.getName());
-        dto.setBrand(BrandMapper.toBrandDTO(product.getBrand()));
+        dto.setBrand(BrandMapper.toBrandDto(product.getBrand()));
         return dto;
     }
 
-    public static Product toProduct(ProductDTO dto) {
+    public static Product toProduct(ProductDto dto) {
         Product product = new Product();
         product.setId(dto.getId());
         product.setName(dto.getName());
