@@ -1,9 +1,19 @@
 package com.rodrigocso.groceries.dto;
 
-public class ProductDTO {
+import javax.validation.constraints.NotBlank;
+
+public class BrandDto {
     private Integer id;
+
+    @NotBlank(message = "IS_REQUIRED")
     private String name;
-    private BrandDTO brand;
+
+    public BrandDto() {}
+
+    public BrandDto(Integer id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
     public Integer getId() {
         return id;
@@ -19,13 +29,5 @@ public class ProductDTO {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public BrandDTO getBrand() {
-        return brand;
-    }
-
-    public void setBrand(BrandDTO brand) {
-        this.brand = brand;
     }
 }
