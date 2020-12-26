@@ -1,7 +1,7 @@
 package com.rodrigocso.groceries.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rodrigocso.groceries.dto.BrandDTO;
+import com.rodrigocso.groceries.dto.BrandDto;
 import com.rodrigocso.groceries.exception.ControllerExceptionHandler;
 import com.rodrigocso.groceries.service.facade.BrandFacade;
 import org.assertj.core.util.Lists;
@@ -23,8 +23,7 @@ import java.util.List;
 import static com.rodrigocso.groceries.util.ResponseBodyMatchers.responseBody;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,7 +36,7 @@ public class BrandControllerTests {
     @InjectMocks
     private BrandController brandController;
 
-    private JacksonTester<BrandDTO> jsonBrandDTO;
+    private JacksonTester<BrandDto> jsonBrandDto;
 
     @BeforeEach
     public void setup() {
@@ -49,22 +48,22 @@ public class BrandControllerTests {
 
     @Test
     public void whenGetBrands_thenReturnNonEmptyBrandArray() throws Exception {
-        List<BrandDTO> mockBrands = Lists.newArrayList(
-                new BrandDTO(1, "Kirkland"),
-                new BrandDTO(2, "GreenWise"));
+        List<BrandDto> mockBrands = Lists.newArrayList(
+                new BrandDto(1, "Kirkland"),
+                new BrandDto(2, "GreenWise"));
 
         when(brandFacade.findAll()).thenReturn(mockBrands);
 
         mvc.perform(get("/brands"))
                 .andExpect(status().isOk())
-                .andExpect(responseBody().containsObjectAsJson(mockBrands.toArray(), BrandDTO[].class));
+                .andExpect(responseBody().containsObjectAsJson(mockBrands.toArray(), BrandDto[].class));
     }
 
     @Test
     public void whenPostBrandWithoutName_thenReturn400AndErrorResult() throws Exception {
         mvc.perform(post("/brands")
                 .contentType("application/json")
-                .content(jsonBrandDTO.write(new BrandDTO()).getJson()))
+                .content(jsonBrandDto.write(new BrandDto()).getJson()))
                 .andExpect(status().isBadRequest())
                 .andExpect(responseBody().containsError("name", "IS_REQUIRED"));
     }
@@ -77,10 +76,20 @@ public class BrandControllerTests {
 
     @Test
     public void whenPostBrandThatAlreadyExists_thenReturn409() throws Exception {
-        when(brandFacade.save(any(BrandDTO.class))).thenThrow(new DataIntegrityViolationException("Oops"));
+        when(brandFacade.save(any(BrandDto.class))).thenThrow(new DataIntegrityViolationException("Oops"));
         mvc.perform(post("/brands")
                 .contentType("application/json")
-                .content(jsonBrandDTO.write(new BrandDTO(1, "Kirkland")).getJson()))
+                .content(jsonBrandDto.write(new BrandDto(1, "Kirkland")).getJson()))
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    public void whenValidUpdateExistingBrand_thenReturn200() throws Exception {
+        BrandDto brand = new BrandDto(1, "New name");
+        when(brandFacade.update(any(Integer.class), any(BrandDto.class))).thenReturn(brand);
+        mvc.perform(put("/brands/1")
+                .contentType("application/json")
+                .content(jsonBrandDto.write(brand).getJson()))
+                .andExpect(status().isOk());
     }
 }
