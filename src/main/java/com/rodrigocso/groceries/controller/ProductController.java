@@ -1,7 +1,7 @@
 package com.rodrigocso.groceries.controller;
 
-import com.rodrigocso.groceries.model.Product;
-import com.rodrigocso.groceries.repository.ProductRepository;
+import com.rodrigocso.groceries.dto.ProductDto;
+import com.rodrigocso.groceries.service.facade.ProductFacade;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -12,40 +12,39 @@ import java.net.URI;
 @RestController
 @RequestMapping(path = "/products")
 public class ProductController {
-    private final ProductRepository productRepository;
+    private final ProductFacade productFacade;
 
-    public ProductController(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    public ProductController(ProductFacade productFacade) {
+        this.productFacade = productFacade;
     }
 
     @GetMapping
-    public ResponseEntity<Iterable<Product>> getAllProducts() {
-        return ResponseEntity.ok(productRepository.findAll());
+    public ResponseEntity<Iterable<ProductDto>> getAllProducts() {
+        return ResponseEntity.ok(productFacade.findAll());
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<Product> findProductById(@PathVariable Integer id) {
-        return productRepository
-                .findById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<ProductDto> findProductById(@PathVariable Integer id) {
+        return ResponseEntity.ok(productFacade.findById(id));
     }
 
     @GetMapping(path = "/search")
-    public ResponseEntity<Product> findProductByName(@RequestParam String name) {
-        return productRepository
-                .findByNameIgnoreCase(name)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<Iterable<ProductDto>> findProductByName(@RequestParam String name) {
+        return ResponseEntity.ok(productFacade.findByNameContaining(name));
     }
 
     @PostMapping
-    public ResponseEntity<Product> addProduct(@Valid @RequestBody Product newProduct) {
-        Product savedProduct = this.productRepository.save(newProduct);
+    public ResponseEntity<ProductDto> addProduct(@Valid @RequestBody ProductDto newProduct) {
+        ProductDto savedProduct = this.productFacade.save(newProduct);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(savedProduct.getId())
                 .toUri();
         return ResponseEntity.created(location).body(savedProduct);
+    }
+
+    @PutMapping(path = "/{id}")
+    public ResponseEntity<ProductDto> updateProduct(@Valid @RequestBody ProductDto product, @PathVariable Integer id) {
+        return ResponseEntity.ok(productFacade.update(id, product));
     }
 }
