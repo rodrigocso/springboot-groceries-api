@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank;
 @Entity
 public class Brand {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Integer id;
 
     @Column(unique = true)

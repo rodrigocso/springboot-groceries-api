@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank;
 @Entity
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Integer id;
 
     @NotBlank(message = "IS_REQUIRED")
