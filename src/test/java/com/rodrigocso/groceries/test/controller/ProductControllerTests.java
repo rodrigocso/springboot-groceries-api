@@ -63,6 +63,17 @@ public class ProductControllerTests {
     }
 
     @Test
+    public void whenPostValidProduct_thenReturn200() throws Exception {
+        ProductDto dto = ProductBuilder.builder().withId(1).buildDto();
+        when(productFacade.save(any(ProductDto.class))).thenReturn(dto);
+        mvc.perform(post("/products")
+                .contentType("application/json")
+                .content(jsonProductDto.write(dto).getJson()))
+                .andExpect(status().isCreated())
+                .andExpect(responseBody().containsObjectAsJson(dto, ProductDto.class));
+    }
+
+    @Test
     public void whenPostProductWithoutName_thenReturn400AndErrorResult() throws Exception {
         mvc.perform(post("/products")
                 .contentType("application/json")
