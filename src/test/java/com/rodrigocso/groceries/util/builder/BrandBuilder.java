@@ -25,6 +25,16 @@ public class BrandBuilder {
         return BrandMapper.toBrandDto(makeBrand());
     }
 
+    public BrandBuilder from(Brand template) {
+        this.id = template.getId();
+        this.name = template.getName();
+        return this;
+    }
+
+    public BrandBuilder from(BrandDto template) {
+        return from(BrandMapper.toBrand(template));
+    }
+
     public BrandBuilder withId(Integer id) {
         this.id = id;
         return this;

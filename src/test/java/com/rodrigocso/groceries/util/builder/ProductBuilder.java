@@ -28,6 +28,17 @@ public class ProductBuilder {
         return ProductMapper.toProductDto(makeProduct());
     }
 
+    public ProductBuilder from(Product template) {
+        this.id = template.getId();
+        this.name = template.getName();
+        this.brand = BrandBuilder.builder().from(template.getBrand()).build();
+        return this;
+    }
+
+    public ProductBuilder from(ProductDto template) {
+        return from(ProductMapper.toProduct(template));
+    }
+
     public ProductBuilder withId(Integer id) {
         this.id = id;
         return this;

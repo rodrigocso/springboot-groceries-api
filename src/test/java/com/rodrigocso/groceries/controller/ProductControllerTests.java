@@ -87,8 +87,13 @@ public class ProductControllerTests {
     }
 
     @Test
+    public void whenPostWithoutBody_thenReturn400() throws Exception {
+        mvc.perform(post("/products").contentType("application/json")).andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void whenValidUpdateExistingProduct_thenReturn200() throws Exception {
-        when(productFacade.update(any(Integer.class), any(ProductDto.class))).thenReturn(null);
+        when(productFacade.save(any(ProductDto.class))).thenReturn(null);
         mvc.perform(put("/products/1")
                 .contentType("application/json")
                 .content(jsonProductDto.write(ProductBuilder.builder().buildDto()).getJson()))
@@ -105,5 +110,19 @@ public class ProductControllerTests {
         mvc.perform(get("/products/brand/1"))
                 .andExpect(status().isOk())
                 .andExpect(responseBody().containsObjectAsJson(mockProducts.toArray(), ProductDto[].class));
+    }
+
+    @Test
+    public void whenUpdateWithNullProduct_thenReturn400() throws Exception {
+        mvc.perform(put("/products/1").contentType("application/json"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void whenUpdateWithMismatchedProduct_thenReturn400() throws Exception {
+        mvc.perform(put("/products/1")
+                .contentType("application/json")
+                .content(jsonProductDto.write(ProductBuilder.builder().withId(2).buildDto()).getJson()))
+                .andExpect(status().isBadRequest());
     }
 }
