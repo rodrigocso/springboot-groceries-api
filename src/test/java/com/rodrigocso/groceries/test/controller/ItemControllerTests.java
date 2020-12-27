@@ -1,10 +1,11 @@
-package com.rodrigocso.groceries.controller;
+package com.rodrigocso.groceries.test.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rodrigocso.groceries.controller.ItemController;
 import com.rodrigocso.groceries.dto.ItemDto;
 import com.rodrigocso.groceries.exception.ControllerExceptionHandler;
 import com.rodrigocso.groceries.service.facade.ItemFacade;
-import com.rodrigocso.groceries.util.builder.ItemBuilder;
+import com.rodrigocso.groceries.test.util.builder.ItemBuilder;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
 
-import static com.rodrigocso.groceries.util.ResponseBodyMatchers.responseBody;
+import static com.rodrigocso.groceries.test.util.ResponseBodyMatchers.responseBody;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;

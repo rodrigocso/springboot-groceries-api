@@ -1,10 +1,11 @@
-package com.rodrigocso.groceries.controller;
+package com.rodrigocso.groceries.test.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rodrigocso.groceries.controller.BrandController;
 import com.rodrigocso.groceries.dto.BrandDto;
 import com.rodrigocso.groceries.exception.ControllerExceptionHandler;
 import com.rodrigocso.groceries.service.facade.BrandFacade;
-import com.rodrigocso.groceries.util.builder.BrandBuilder;
+import com.rodrigocso.groceries.test.util.builder.BrandBuilder;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
-import static com.rodrigocso.groceries.util.ResponseBodyMatchers.responseBody;
+import static com.rodrigocso.groceries.test.util.ResponseBodyMatchers.responseBody;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -89,7 +90,7 @@ public class BrandControllerTests {
         when(brandFacade.save(any(BrandDto.class))).thenReturn(null);
         mvc.perform(put("/brands/1")
                 .contentType("application/json")
-                .content(jsonBrandDto.write(BrandBuilder.builder().buildDto()).getJson()))
+                .content(jsonBrandDto.write(BrandBuilder.builder().withId(1).buildDto()).getJson()))
                 .andExpect(status().isOk());
     }
 }

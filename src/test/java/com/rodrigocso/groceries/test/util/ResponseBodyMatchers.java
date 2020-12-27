@@ -1,4 +1,4 @@
-package com.rodrigocso.groceries.util;
+package com.rodrigocso.groceries.test.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rodrigocso.groceries.exception.ErrorResponse;

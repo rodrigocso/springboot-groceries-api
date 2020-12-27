@@ -1,8 +1,9 @@
-package com.rodrigocso.groceries.service.facade;
+package com.rodrigocso.groceries.test.service.facade;
 
 import com.rodrigocso.groceries.dto.BrandDto;
 import com.rodrigocso.groceries.repository.BrandRepository;
-import com.rodrigocso.groceries.util.builder.BrandBuilder;
+import com.rodrigocso.groceries.service.facade.BrandFacade;
+import com.rodrigocso.groceries.test.util.builder.BrandBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,14 @@ public class BrandFacadeTests {
     @Test
     public void brandFacadeIsNotNull() {
         assertThat(brandFacade).isNotNull();
+    }
+
+    @Test
+    public void whenFindAll_thenReturnBrandList() {
+        brandFacade.save(BrandBuilder.builder().withName("B1").buildDto());
+        brandFacade.save(BrandBuilder.builder().withName("B2").buildDto());
+        brandFacade.save(BrandBuilder.builder().withName("B3").buildDto());
+        assertThat(brandFacade.findAll().size()).isEqualTo(3);
     }
 
     @Test

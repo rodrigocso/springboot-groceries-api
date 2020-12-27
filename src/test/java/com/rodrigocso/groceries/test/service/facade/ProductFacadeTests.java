@@ -1,11 +1,12 @@
-package com.rodrigocso.groceries.service.facade;
+package com.rodrigocso.groceries.test.service.facade;
 
 import com.rodrigocso.groceries.dto.ProductDto;
 import com.rodrigocso.groceries.model.Brand;
 import com.rodrigocso.groceries.repository.BrandRepository;
 import com.rodrigocso.groceries.repository.ProductRepository;
-import com.rodrigocso.groceries.util.builder.BrandBuilder;
-import com.rodrigocso.groceries.util.builder.ProductBuilder;
+import com.rodrigocso.groceries.service.facade.ProductFacade;
+import com.rodrigocso.groceries.test.util.builder.BrandBuilder;
+import com.rodrigocso.groceries.test.util.builder.ProductBuilder;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
