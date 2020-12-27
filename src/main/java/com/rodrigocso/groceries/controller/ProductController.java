@@ -33,6 +33,11 @@ public class ProductController {
         return ResponseEntity.ok(productFacade.findByNameContaining(name));
     }
 
+    @GetMapping(path = "/brand/{brandId}")
+    public ResponseEntity<Iterable<ProductDto>> findAllProductsByBrand(@PathVariable Integer brandId) {
+        return ResponseEntity.ok(productFacade.findByBrandId(brandId));
+    }
+
     @PostMapping
     public ResponseEntity<ProductDto> addProduct(@Valid @RequestBody ProductDto newProduct) {
         ProductDto savedProduct = this.productFacade.save(newProduct);
