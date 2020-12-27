@@ -29,9 +29,9 @@ public class ProductBuilder {
     }
 
     public ProductBuilder from(Product template) {
-        this.id = template.getId();
-        this.name = template.getName();
-        this.brand = BrandBuilder.builder().from(template.getBrand()).build();
+        id = template.getId();
+        name = template.getName();
+        brand = BrandBuilder.builder().from(template.getBrand()).build();
         return this;
     }
 

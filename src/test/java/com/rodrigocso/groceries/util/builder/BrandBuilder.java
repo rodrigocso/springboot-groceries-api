@@ -26,8 +26,8 @@ public class BrandBuilder {
     }
 
     public BrandBuilder from(Brand template) {
-        this.id = template.getId();
-        this.name = template.getName();
+        id = template.getId();
+        name = template.getName();
         return this;
     }
 
