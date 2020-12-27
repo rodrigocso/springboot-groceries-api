@@ -50,6 +50,9 @@ public class ProductController {
 
     @PutMapping(path = "/{id}")
     public ResponseEntity<ProductDto> updateProduct(@Valid @RequestBody ProductDto product, @PathVariable Integer id) {
-        return ResponseEntity.ok(productFacade.update(id, product));
+        if (!product.getId().equals(id)) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(productFacade.save(product));
     }
 }
