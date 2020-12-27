@@ -1,4 +1,4 @@
-package com.rodrigocso.groceries.util.builder;
+package com.rodrigocso.groceries.test.util.builder;
 
 import com.rodrigocso.groceries.dto.ProductDto;
 import com.rodrigocso.groceries.model.Brand;
@@ -11,7 +11,7 @@ public class ProductBuilder {
     private Brand brand;
 
     private ProductBuilder() {
-        id = 1;
+        id = null;
         name = "Some product";
         brand = BrandBuilder.builder().build();
     }

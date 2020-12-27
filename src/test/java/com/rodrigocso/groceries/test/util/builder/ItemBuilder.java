@@ -1,4 +1,4 @@
-package com.rodrigocso.groceries.util.builder;
+package com.rodrigocso.groceries.test.util.builder;
 
 import com.rodrigocso.groceries.dto.ItemDto;
 import com.rodrigocso.groceries.model.Item;
@@ -12,7 +12,7 @@ public class ItemBuilder {
     private String unit;
 
     private ItemBuilder() {
-        id = 1;
+        id = null;
         product = ProductBuilder.builder().build();
         packageSize = 1F;
         unit = "kg";

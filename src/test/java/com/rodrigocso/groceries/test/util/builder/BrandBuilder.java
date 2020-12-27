@@ -1,4 +1,4 @@
-package com.rodrigocso.groceries.util.builder;
+package com.rodrigocso.groceries.test.util.builder;
 
 import com.rodrigocso.groceries.dto.BrandDto;
 import com.rodrigocso.groceries.model.Brand;
@@ -9,7 +9,7 @@ public class BrandBuilder {
     private String name;
 
     private BrandBuilder() {
-        id = 1;
+        id = null;
         name = "Some brand";
     }
 
