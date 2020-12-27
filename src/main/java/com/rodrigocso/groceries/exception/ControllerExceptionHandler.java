@@ -34,7 +34,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     Map<String, String> handleDataIntegrityViolation(DataIntegrityViolationException e) {
         Map<String, String> body = new HashMap<>();
-        body.put("error", "ENTITY_EXISTS");
+        body.put("error", e.getMessage());
 
         return body;
     }
