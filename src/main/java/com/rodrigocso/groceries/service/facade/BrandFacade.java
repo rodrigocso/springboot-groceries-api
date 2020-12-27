@@ -44,16 +44,4 @@ public class BrandFacade {
             return BrandMapper.toBrandDto(brandRepository.save(BrandMapper.toBrand(dto)));
         }
     }
-
-    public BrandDto update(Integer id, BrandDto dto) {
-        return brandRepository.findById(id)
-                .map((brand) -> {
-                    dto.setId(brand.getId());
-                    return dto;
-                })
-                .map(BrandMapper::toBrand)
-                .map(brandRepository::save)
-                .map(BrandMapper::toBrandDto)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-    }
 }

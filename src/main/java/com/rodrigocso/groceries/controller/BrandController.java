@@ -45,6 +45,9 @@ public class BrandController {
 
     @PutMapping(path = "/{id}")
     public ResponseEntity<BrandDto> updateBrand(@Valid @RequestBody BrandDto brand, @PathVariable Integer id) {
-        return ResponseEntity.ok(brandFacade.update(id, brand));
+        if (!brand.getId().equals(id)) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(brandFacade.save(brand));
     }
 }
