@@ -4,7 +4,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"brand_id", "name"}))
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -14,10 +13,7 @@ public class Product {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "brand_id")
     private Brand brand;
-
-    public Product() {}
 
     public Integer getId() {
         return id;

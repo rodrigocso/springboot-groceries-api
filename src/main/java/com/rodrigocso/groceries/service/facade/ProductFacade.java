@@ -36,6 +36,12 @@ public class ProductFacade {
                 .collect(Collectors.toList());
     }
 
+    public List<ProductDto> findByBrandId(Integer brandId) {
+        return productRepository.findByBrandId(brandId).stream()
+                .map(ProductMapper::toProductDto)
+                .collect(Collectors.toList());
+    }
+
     public ProductDto save(ProductDto dto) {
         return ProductMapper.toProductDto(productRepository.save(ProductMapper.toProduct(dto)));
     }

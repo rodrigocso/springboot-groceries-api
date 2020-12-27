@@ -8,17 +8,6 @@ public class BrandDto {
     @NotBlank(message = "IS_REQUIRED")
     private String name;
 
-    public BrandDto() {}
-
-    public BrandDto(String name) {
-        this.name = name;
-    }
-
-    public BrandDto(Integer id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
     public Integer getId() {
         return id;
     }

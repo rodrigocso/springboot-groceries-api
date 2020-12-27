@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rodrigocso.groceries.dto.BrandDto;
 import com.rodrigocso.groceries.exception.ControllerExceptionHandler;
 import com.rodrigocso.groceries.service.facade.BrandFacade;
+import com.rodrigocso.groceries.util.builder.BrandBuilder;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,8 +50,8 @@ public class BrandControllerTests {
     @Test
     public void whenGetBrands_thenReturnNonEmptyBrandArray() throws Exception {
         List<BrandDto> mockBrands = Lists.newArrayList(
-                new BrandDto(1, "Kirkland"),
-                new BrandDto(2, "GreenWise"));
+                BrandBuilder.builder().withName("Kirkland").buildDto(),
+                BrandBuilder.builder().withName("Apple").buildDto());
 
         when(brandFacade.findAll()).thenReturn(mockBrands);
 
@@ -63,7 +64,7 @@ public class BrandControllerTests {
     public void whenPostBrandWithoutName_thenReturn400AndErrorResult() throws Exception {
         mvc.perform(post("/brands")
                 .contentType("application/json")
-                .content(jsonBrandDto.write(new BrandDto()).getJson()))
+                .content(jsonBrandDto.write(BrandBuilder.builder().withName("").buildDto()).getJson()))
                 .andExpect(status().isBadRequest())
                 .andExpect(responseBody().containsError("name", "IS_REQUIRED"));
     }
@@ -79,17 +80,16 @@ public class BrandControllerTests {
         when(brandFacade.save(any(BrandDto.class))).thenThrow(new DataIntegrityViolationException("Oops"));
         mvc.perform(post("/brands")
                 .contentType("application/json")
-                .content(jsonBrandDto.write(new BrandDto(1, "Kirkland")).getJson()))
+                .content(jsonBrandDto.write(BrandBuilder.builder().buildDto()).getJson()))
                 .andExpect(status().isConflict());
     }
 
     @Test
     public void whenValidUpdateExistingBrand_thenReturn200() throws Exception {
-        BrandDto brand = new BrandDto(1, "New name");
-        when(brandFacade.update(any(Integer.class), any(BrandDto.class))).thenReturn(brand);
+        when(brandFacade.update(any(Integer.class), any(BrandDto.class))).thenReturn(null);
         mvc.perform(put("/brands/1")
                 .contentType("application/json")
-                .content(jsonBrandDto.write(brand).getJson()))
+                .content(jsonBrandDto.write(BrandBuilder.builder().buildDto()).getJson()))
                 .andExpect(status().isOk());
     }
 }

@@ -1,10 +1,10 @@
 package com.rodrigocso.groceries.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rodrigocso.groceries.dto.BrandDto;
 import com.rodrigocso.groceries.dto.ProductDto;
 import com.rodrigocso.groceries.exception.ControllerExceptionHandler;
 import com.rodrigocso.groceries.service.facade.ProductFacade;
+import com.rodrigocso.groceries.util.builder.ProductBuilder;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,8 +50,8 @@ public class ProductControllerTests {
     @Test
     public void whenGetProducts_thenReturnNonEmptyProductArray() throws Exception {
         List<ProductDto> mockProducts = Lists.newArrayList(
-                new ProductDto(1, "Filtered water", new BrandDto(1, "Kirkland")),
-                new ProductDto(2, "iPad Pro", new BrandDto(2, "Apple"))
+                ProductBuilder.builder().buildDto(),
+                ProductBuilder.builder().buildDto()
         );
 
         when(productFacade.findAll()).thenReturn(mockProducts);
@@ -65,9 +65,7 @@ public class ProductControllerTests {
     public void whenPostProductWithoutName_thenReturn400AndErrorResult() throws Exception {
         mvc.perform(post("/products")
                 .contentType("application/json")
-                .content(jsonProductDto
-                        .write(new ProductDto(1, "", new BrandDto(1, "Apple")))
-                        .getJson()))
+                .content(jsonProductDto.write(ProductBuilder.builder().withName("").buildDto()).getJson()))
                 .andExpect(status().isBadRequest())
                 .andExpect(responseBody().containsError("name", "IS_REQUIRED"));
 
@@ -84,18 +82,28 @@ public class ProductControllerTests {
         when(productFacade.save(any(ProductDto.class))).thenThrow(new DataIntegrityViolationException("Oops"));
         mvc.perform(post("/products")
                 .contentType("application/json")
-                .content(jsonProductDto
-                        .write(new ProductDto(1, "MacBook", new BrandDto(1, "Apple"))).getJson()))
+                .content(jsonProductDto.write(ProductBuilder.builder().buildDto()).getJson()))
                 .andExpect(status().isConflict());
     }
 
     @Test
     public void whenValidUpdateExistingProduct_thenReturn200() throws Exception {
-        ProductDto product = new ProductDto(1, "iPhone", new BrandDto(1, "Apple"));
-        when(productFacade.update(any(Integer.class), any(ProductDto.class))).thenReturn(product);
+        when(productFacade.update(any(Integer.class), any(ProductDto.class))).thenReturn(null);
         mvc.perform(put("/products/1")
                 .contentType("application/json")
-                .content(jsonProductDto.write(product).getJson()))
+                .content(jsonProductDto.write(ProductBuilder.builder().buildDto()).getJson()))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void whenGetProductsByBrandId_thenReturnProductList() throws Exception {
+        List<ProductDto> mockProducts = Lists.newArrayList(
+                ProductBuilder.builder().buildDto(),
+                ProductBuilder.builder().buildDto()
+        );
+        when(productFacade.findByBrandId(1)).thenReturn(mockProducts);
+        mvc.perform(get("/products/brand/1"))
+                .andExpect(status().isOk())
+                .andExpect(responseBody().containsObjectAsJson(mockProducts.toArray(), ProductDto[].class));
     }
 }

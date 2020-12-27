@@ -2,6 +2,7 @@ package com.rodrigocso.groceries.service.facade;
 
 import com.rodrigocso.groceries.dto.BrandDto;
 import com.rodrigocso.groceries.repository.BrandRepository;
+import com.rodrigocso.groceries.util.builder.BrandBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,26 +33,27 @@ public class BrandFacadeTests {
 
     @Test
     public void whenSaved_findsById() {
-        BrandDto dto = brandFacade.save(new BrandDto("Kirkland"));
+        BrandDto dto = brandFacade.save(BrandBuilder.builder().buildDto());
         assertThat(brandFacade.findById(dto.getId())).usingRecursiveComparison().isEqualTo(dto);
     }
 
     @Test
     public void whenInsertWithSameName_thenThrowError() {
-        brandFacade.save(new BrandDto("Kirkland"));
-        assertThrows(DataIntegrityViolationException.class, () -> brandFacade.save(new BrandDto("KirkLand")));
+        brandFacade.save(BrandBuilder.builder().withName("Kirkland").buildDto());
+        assertThrows(DataIntegrityViolationException.class, () -> brandFacade.save(
+                BrandBuilder.builder().withName("Kirkland").buildDto()));
     }
 
     @Test
     public void whenInsertWithEmptyName_thenThrowError() {
-        brandFacade.save(new BrandDto());
+        brandFacade.save(BrandBuilder.builder().withName("").buildDto());
         assertThrows(ConstraintViolationException.class, () -> brandRepository.flush());
     }
 
     @Test
     public void whenSearchByName_thenReturnList() {
-        brandFacade.save(new BrandDto("Kirkland"));
-        brandFacade.save(new BrandDto("Timberland"));
+        brandFacade.save(BrandBuilder.builder().withName("Kirkland").buildDto());
+        brandFacade.save(BrandBuilder.builder().withName("Timberland").buildDto());
         assertThat(brandFacade.findByNameContaining("LAN").size()).isEqualTo(2);
     }
 }

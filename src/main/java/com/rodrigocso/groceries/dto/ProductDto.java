@@ -12,14 +12,6 @@ public class ProductDto {
     @Valid
     private BrandDto brand;
 
-    public ProductDto() {}
-
-    public ProductDto(Integer id, String name, BrandDto brand) {
-        this.id = id;
-        this.name = name;
-        this.brand = brand;
-    }
-
     public Integer getId() {
         return id;
     }
