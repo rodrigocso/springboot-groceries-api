@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,10 +26,8 @@ public class ProductFacade {
                 .collect(Collectors.toList());
     }
 
-    public ProductDto findById(Integer id) {
-        return productRepository.findById(id)
-                .map(ProductMapper::toProductDto)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public Optional<ProductDto> findById(Integer id) {
+        return productRepository.findById(id).map(ProductMapper::toProductDto);
     }
 
     public List<ProductDto> findByNameContaining(String partialName) {

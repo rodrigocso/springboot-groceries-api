@@ -2,8 +2,10 @@ package com.rodrigocso.groceries.controller;
 
 import com.rodrigocso.groceries.dto.BrandDto;
 import com.rodrigocso.groceries.service.facade.BrandFacade;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -25,7 +27,9 @@ public class BrandController {
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<BrandDto> findById(@PathVariable Integer id) {
-        return ResponseEntity.ok(brandFacade.findById(id));
+        return brandFacade.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping(path = "/search")
@@ -45,7 +49,7 @@ public class BrandController {
 
     @PutMapping(path = "/{id}")
     public ResponseEntity<BrandDto> updateBrand(@Valid @RequestBody BrandDto brand, @PathVariable Integer id) {
-        if (!brand.getId().equals(id)) {
+        if (!id.equals(brand.getId())) {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(brandFacade.save(brand));

@@ -2,8 +2,10 @@ package com.rodrigocso.groceries.controller;
 
 import com.rodrigocso.groceries.dto.ProductDto;
 import com.rodrigocso.groceries.service.facade.ProductFacade;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
@@ -25,7 +27,9 @@ public class ProductController {
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<ProductDto> findProductById(@PathVariable Integer id) {
-        return ResponseEntity.ok(productFacade.findById(id));
+        return productFacade.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping(path = "/search")
@@ -50,7 +54,7 @@ public class ProductController {
 
     @PutMapping(path = "/{id}")
     public ResponseEntity<ProductDto> updateProduct(@Valid @RequestBody ProductDto product, @PathVariable Integer id) {
-        if (!product.getId().equals(id)) {
+        if (!id.equals(product.getId())) {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(productFacade.save(product));
