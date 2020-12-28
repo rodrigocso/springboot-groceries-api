@@ -1,6 +1,8 @@
 package com.rodrigocso.groceries.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
@@ -10,12 +12,15 @@ public class Item {
     @GeneratedValue
     private Integer id;
 
+    @NotNull(message = "IS_REQUIRED")
     @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
+    @NotNull(message = "IS_REQUIRED")
     @Positive(message = "HAS_TO_BE_POSITIVE")
     private Float packageSize;
 
+    @NotBlank(message = "IS_REQUIRED")
     @Size(max = 3, message = "MAX_3_CHARS")
     private String unit;
 
