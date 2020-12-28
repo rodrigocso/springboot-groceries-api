@@ -5,6 +5,7 @@ import com.rodrigocso.groceries.model.Item;
 
 public class ItemMapper {
     public static ItemDto toItemDto(Item item) {
+        if (item == null) return null;
         ItemDto dto = new ItemDto();
         dto.setId(item.getId());
         dto.setProduct(ProductMapper.toProductDto(item.getProduct()));
@@ -14,6 +15,7 @@ public class ItemMapper {
     }
 
     public static Item toItem(ItemDto dto) {
+        if (dto == null) return null;
         Item item = new Item();
         item.setId(dto.getId());
         item.setProduct(ProductMapper.toProduct(dto.getProduct()));
