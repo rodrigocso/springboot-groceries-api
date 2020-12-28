@@ -12,7 +12,7 @@
         <img src="https://img.shields.io/badge/Spring%20Boot-v2.4.1-6DB33F.svg" />
     </a>
     <a alt="Coverage">
-        <img src="https://img.shields.io/badge/coverage-88%25-31D843" />
+        <img src="https://img.shields.io/badge/coverage-92%25-31D843" />
     </a>
     <a alt="License">
         <img src="https://img.shields.io/badge/license-MIT-63B0CD.svg" />

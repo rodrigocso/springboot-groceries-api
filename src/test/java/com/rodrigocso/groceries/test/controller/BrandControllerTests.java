@@ -15,12 +15,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.rodrigocso.groceries.test.util.ResponseBodyMatchers.responseBody;
 import static org.mockito.ArgumentMatchers.any;
@@ -72,7 +71,7 @@ public class BrandControllerTests {
 
     @Test
     public void whenGetNonExistingBrandById_thenReturn404() throws Exception {
-        when(brandFacade.findById(5)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND));
+        when(brandFacade.findById(5)).thenReturn(Optional.empty());
         mvc.perform(get("/brands/5")).andExpect(status().isNotFound());
     }
 
@@ -86,11 +85,26 @@ public class BrandControllerTests {
     }
 
     @Test
-    public void whenValidUpdateExistingBrand_thenReturn200() throws Exception {
+    public void whenPutValidExistingBrand_thenReturn200() throws Exception {
         when(brandFacade.save(any(BrandDto.class))).thenReturn(null);
         mvc.perform(put("/brands/1")
                 .contentType("application/json")
                 .content(jsonBrandDto.write(BrandBuilder.builder().withId(1).buildDto()).getJson()))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void whenPutMismatchedId_thenReturn400() throws Exception {
+        mvc.perform(put("/brands/1")
+                .contentType("application/json")
+                .content(jsonBrandDto.write(BrandBuilder.builder().withId(2).buildDto()).getJson()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void whenPutWithoutBody_thenReturn400() throws Exception {
+        mvc.perform(put("/brands/1")
+                .contentType("application/json"))
+                .andExpect(status().isBadRequest());
     }
 }

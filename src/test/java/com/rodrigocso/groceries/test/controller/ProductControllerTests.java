@@ -15,12 +15,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.rodrigocso.groceries.test.util.ResponseBodyMatchers.responseBody;
 import static org.mockito.ArgumentMatchers.any;
@@ -85,7 +84,7 @@ public class ProductControllerTests {
 
     @Test
     public void whenGetNonExistingProductById_thenReturn404() throws Exception {
-        when(productFacade.findById(1)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND));
+        when(productFacade.findById(1)).thenReturn(Optional.empty());
         mvc.perform(get("/products/1")).andExpect(status().isNotFound());
     }
 
@@ -104,7 +103,7 @@ public class ProductControllerTests {
     }
 
     @Test
-    public void whenValidUpdateExistingProduct_thenReturn200() throws Exception {
+    public void whenPutValidExistingProduct_thenReturn200() throws Exception {
         when(productFacade.save(any(ProductDto.class))).thenReturn(null);
         mvc.perform(put("/products/1")
                 .contentType("application/json")
@@ -125,13 +124,14 @@ public class ProductControllerTests {
     }
 
     @Test
-    public void whenUpdateWithNullProduct_thenReturn400() throws Exception {
-        mvc.perform(put("/products/1").contentType("application/json"))
+    public void whenPutWithoutBody_thenReturn400() throws Exception {
+        mvc.perform(put("/products/1")
+                .contentType("application/json"))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void whenUpdateWithMismatchedProduct_thenReturn400() throws Exception {
+    public void whenPutMismatchedId_thenReturn400() throws Exception {
         mvc.perform(put("/products/1")
                 .contentType("application/json")
                 .content(jsonProductDto.write(ProductBuilder.builder().withId(2).buildDto()).getJson()))
