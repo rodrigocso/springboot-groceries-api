@@ -133,4 +133,13 @@ public class ItemControllerTests {
                 .contentType("application/json"))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    public void whenPutNonExistingItem_thenReturn404() throws Exception {
+        when(itemFacade.findById(1)).thenReturn(Optional.empty());
+        mvc.perform(put("/items/1")
+                .contentType("application/json")
+                .content(jsonItemDto.write(ItemBuilder.builder().withId(1).buildDto()).getJson()))
+                .andExpect(status().isNotFound());
+    }
 }

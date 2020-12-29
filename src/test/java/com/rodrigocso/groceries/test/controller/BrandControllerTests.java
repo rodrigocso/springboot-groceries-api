@@ -107,4 +107,13 @@ public class BrandControllerTests {
                 .contentType("application/json"))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    public void whenPutNonExistingBrand_thenReturn404() throws Exception {
+        when(brandFacade.findById(1)).thenReturn(Optional.empty());
+        mvc.perform(put("/brands/1")
+                .contentType("application/json")
+                .content(jsonBrandDto.write(BrandBuilder.builder().withId(1).buildDto()).getJson()))
+                .andExpect(status().isNotFound());
+    }
 }

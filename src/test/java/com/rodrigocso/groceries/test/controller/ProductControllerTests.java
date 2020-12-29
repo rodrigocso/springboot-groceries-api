@@ -137,4 +137,13 @@ public class ProductControllerTests {
                 .content(jsonProductDto.write(ProductBuilder.builder().withId(2).buildDto()).getJson()))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    public void whenPutNonExistingProduct_thenReturn404() throws Exception {
+        when(productFacade.findById(1)).thenReturn(Optional.empty());
+        mvc.perform(put("/products/1")
+                .contentType("application/json")
+                .content(jsonProductDto.write(ProductBuilder.builder().withId(1).buildDto()).getJson()))
+                .andExpect(status().isNotFound());
+    }
 }
