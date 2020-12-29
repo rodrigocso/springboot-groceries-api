@@ -3,7 +3,6 @@ package com.rodrigocso.groceries.test.service.facade;
 import com.rodrigocso.groceries.dto.BrandDto;
 import com.rodrigocso.groceries.repository.BrandRepository;
 import com.rodrigocso.groceries.service.facade.BrandFacade;
-import com.rodrigocso.groceries.service.mapper.BrandMapper;
 import com.rodrigocso.groceries.test.util.builder.BrandBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -67,11 +66,5 @@ public class BrandFacadeTests {
         brandFacade.save(BrandBuilder.builder().withName("Kirkland").buildDto());
         brandFacade.save(BrandBuilder.builder().withName("Timberland").buildDto());
         assertThat(brandFacade.findByNameContaining("LAN").size()).isEqualTo(2);
-    }
-
-    @Test
-    public void optionalPlayground() {
-        Optional<BrandDto> dto = brandRepository.findById(1).map(BrandMapper::toBrandDto);
-        assertThat(dto.isPresent()).isEqualTo(false);
     }
 }
