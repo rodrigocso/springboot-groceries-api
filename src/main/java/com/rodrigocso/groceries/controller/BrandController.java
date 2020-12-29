@@ -52,6 +52,9 @@ public class BrandController {
         if (!id.equals(brand.getId())) {
             return ResponseEntity.badRequest().build();
         }
+        if (brandFacade.findById(id).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(brandFacade.save(brand));
     }
 }

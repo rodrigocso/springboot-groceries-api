@@ -45,6 +45,9 @@ public class ItemController {
         if (!id.equals(item.getId())) {
             return ResponseEntity.badRequest().build();
         }
+        if (itemFacade.findById(id).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(itemFacade.save(item));
     }
 }
