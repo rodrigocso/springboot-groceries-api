@@ -86,10 +86,12 @@ public class BrandControllerTests {
 
     @Test
     public void whenPutValidExistingBrand_thenReturn200() throws Exception {
-        when(brandFacade.save(any(BrandDto.class))).thenReturn(null);
+        BrandDto dto = BrandBuilder.builder().withId(1).buildDto();
+        when(brandFacade.findById(1)).thenReturn(Optional.of(dto));
+        when(brandFacade.save(any(BrandDto.class))).thenReturn(dto);
         mvc.perform(put("/brands/1")
                 .contentType("application/json")
-                .content(jsonBrandDto.write(BrandBuilder.builder().withId(1).buildDto()).getJson()))
+                .content(jsonBrandDto.write(dto).getJson()))
                 .andExpect(status().isOk());
     }
 

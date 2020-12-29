@@ -119,6 +119,7 @@ public class ItemControllerTests {
     @Test
     public void whenPutValidItem_thenReturn200() throws Exception {
         ItemDto dto = ItemBuilder.builder().withId(1).buildDto();
+        when(itemFacade.findById(1)).thenReturn(Optional.of(dto));
         when(itemFacade.save(any(ItemDto.class))).thenReturn(dto);
         mvc.perform(put("/items/1")
                 .contentType("application/json")

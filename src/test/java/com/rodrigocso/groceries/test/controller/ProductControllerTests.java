@@ -104,10 +104,12 @@ public class ProductControllerTests {
 
     @Test
     public void whenPutValidExistingProduct_thenReturn200() throws Exception {
-        when(productFacade.save(any(ProductDto.class))).thenReturn(null);
+        ProductDto dto = ProductBuilder.builder().withId(1).buildDto();
+        when(productFacade.findById(1)).thenReturn(Optional.of(dto));
+        when(productFacade.save(any(ProductDto.class))).thenReturn(dto);
         mvc.perform(put("/products/1")
                 .contentType("application/json")
-                .content(jsonProductDto.write(ProductBuilder.builder().withId(1).buildDto()).getJson()))
+                .content(jsonProductDto.write(dto).getJson()))
                 .andExpect(status().isOk());
     }
 
