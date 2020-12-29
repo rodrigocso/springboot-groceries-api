@@ -3,9 +3,7 @@ package com.rodrigocso.groceries.service.facade;
 import com.rodrigocso.groceries.dto.ItemDto;
 import com.rodrigocso.groceries.repository.ItemRepository;
 import com.rodrigocso.groceries.service.mapper.ItemMapper;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
