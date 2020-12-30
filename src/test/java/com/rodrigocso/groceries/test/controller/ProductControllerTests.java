@@ -2,9 +2,9 @@ package com.rodrigocso.groceries.test.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rodrigocso.groceries.controller.ProductController;
-import com.rodrigocso.groceries.dto.ProductDto;
 import com.rodrigocso.groceries.exception.ControllerExceptionHandler;
-import com.rodrigocso.groceries.service.facade.ProductFacade;
+import com.rodrigocso.groceries.model.Product;
+import com.rodrigocso.groceries.repository.ProductRepository;
 import com.rodrigocso.groceries.test.util.builder.ProductBuilder;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,12 +32,12 @@ public class ProductControllerTests {
     private MockMvc mvc;
 
     @Mock
-    private ProductFacade productFacade;
+    private ProductRepository productRepository;
 
     @InjectMocks
     private ProductController productController;
 
-    private JacksonTester<ProductDto> jsonProductDto;
+    private JacksonTester<Product> jsonProduct;
 
     @BeforeEach
     public void setup() {
@@ -49,34 +49,34 @@ public class ProductControllerTests {
 
     @Test
     public void whenGetProducts_thenReturnNonEmptyProductArray() throws Exception {
-        List<ProductDto> mockProducts = Lists.newArrayList(
-                ProductBuilder.builder().buildDto(),
-                ProductBuilder.builder().buildDto()
+        List<Product> testProducts = Lists.newArrayList(
+                ProductBuilder.builder().build(),
+                ProductBuilder.builder().build()
         );
 
-        when(productFacade.findAll()).thenReturn(mockProducts);
+        when(productRepository.findAll()).thenReturn(testProducts);
 
         mvc.perform(get("/products"))
                 .andExpect(status().isOk())
-                .andExpect(responseBody().containsObjectAsJson(mockProducts.toArray(), ProductDto[].class));
+                .andExpect(responseBody().containsObjectAsJson(testProducts.toArray(), Product[].class));
     }
 
     @Test
     public void whenPostValidProduct_thenReturn200() throws Exception {
-        ProductDto dto = ProductBuilder.builder().withId(1).buildDto();
-        when(productFacade.save(any(ProductDto.class))).thenReturn(dto);
+        Product dto = ProductBuilder.builder().withId(1L).build();
+        when(productRepository.save(any(Product.class))).thenReturn(dto);
         mvc.perform(post("/products")
                 .contentType("application/json")
-                .content(jsonProductDto.write(dto).getJson()))
+                .content(jsonProduct.write(dto).getJson()))
                 .andExpect(status().isCreated())
-                .andExpect(responseBody().containsObjectAsJson(dto, ProductDto.class));
+                .andExpect(responseBody().containsObjectAsJson(dto, Product.class));
     }
 
     @Test
     public void whenPostProductWithoutName_thenReturn400AndErrorResult() throws Exception {
         mvc.perform(post("/products")
                 .contentType("application/json")
-                .content(jsonProductDto.write(ProductBuilder.builder().withName("").buildDto()).getJson()))
+                .content(jsonProduct.write(ProductBuilder.builder().withName("").build()).getJson()))
                 .andExpect(status().isBadRequest())
                 .andExpect(responseBody().containsError("name", "IS_REQUIRED"));
 
@@ -84,16 +84,16 @@ public class ProductControllerTests {
 
     @Test
     public void whenGetNonExistingProductById_thenReturn404() throws Exception {
-        when(productFacade.findById(1)).thenReturn(Optional.empty());
+        when(productRepository.findById(1L)).thenReturn(Optional.empty());
         mvc.perform(get("/products/1")).andExpect(status().isNotFound());
     }
 
     @Test
     public void whenPostProductThatAlreadyExists_thenReturn409() throws Exception {
-        when(productFacade.save(any(ProductDto.class))).thenThrow(new DataIntegrityViolationException("Oops"));
+        when(productRepository.save(any(Product.class))).thenThrow(new DataIntegrityViolationException("Oops"));
         mvc.perform(post("/products")
                 .contentType("application/json")
-                .content(jsonProductDto.write(ProductBuilder.builder().buildDto()).getJson()))
+                .content(jsonProduct.write(ProductBuilder.builder().build()).getJson()))
                 .andExpect(status().isConflict());
     }
 
@@ -104,25 +104,25 @@ public class ProductControllerTests {
 
     @Test
     public void whenPutValidExistingProduct_thenReturn200() throws Exception {
-        ProductDto dto = ProductBuilder.builder().withId(1).buildDto();
-        when(productFacade.findById(1)).thenReturn(Optional.of(dto));
-        when(productFacade.save(any(ProductDto.class))).thenReturn(dto);
+        Product dto = ProductBuilder.builder().withId(1L).build();
+        when(productRepository.findById(1L)).thenReturn(Optional.of(dto));
+        when(productRepository.save(any(Product.class))).thenReturn(dto);
         mvc.perform(put("/products/1")
                 .contentType("application/json")
-                .content(jsonProductDto.write(dto).getJson()))
+                .content(jsonProduct.write(dto).getJson()))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void whenGetProductsByBrandId_thenReturnProductList() throws Exception {
-        List<ProductDto> mockProducts = Lists.newArrayList(
-                ProductBuilder.builder().buildDto(),
-                ProductBuilder.builder().buildDto()
+        List<Product> mockProducts = Lists.newArrayList(
+                ProductBuilder.builder().build(),
+                ProductBuilder.builder().build()
         );
-        when(productFacade.findByBrandId(1)).thenReturn(mockProducts);
+        when(productRepository.findByBrandId(1L)).thenReturn(mockProducts);
         mvc.perform(get("/products/brand/1"))
                 .andExpect(status().isOk())
-                .andExpect(responseBody().containsObjectAsJson(mockProducts.toArray(), ProductDto[].class));
+                .andExpect(responseBody().containsObjectAsJson(mockProducts.toArray(), Product[].class));
     }
 
     @Test
@@ -136,16 +136,16 @@ public class ProductControllerTests {
     public void whenPutMismatchedId_thenReturn400() throws Exception {
         mvc.perform(put("/products/1")
                 .contentType("application/json")
-                .content(jsonProductDto.write(ProductBuilder.builder().withId(2).buildDto()).getJson()))
+                .content(jsonProduct.write(ProductBuilder.builder().withId(2L).build()).getJson()))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     public void whenPutNonExistingProduct_thenReturn404() throws Exception {
-        when(productFacade.findById(1)).thenReturn(Optional.empty());
+        when(productRepository.findById(1L)).thenReturn(Optional.empty());
         mvc.perform(put("/products/1")
                 .contentType("application/json")
-                .content(jsonProductDto.write(ProductBuilder.builder().withId(1).buildDto()).getJson()))
+                .content(jsonProduct.write(ProductBuilder.builder().withId(1L).build()).getJson()))
                 .andExpect(status().isNotFound());
     }
 }

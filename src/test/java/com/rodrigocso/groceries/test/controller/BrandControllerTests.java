@@ -2,9 +2,9 @@ package com.rodrigocso.groceries.test.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rodrigocso.groceries.controller.BrandController;
-import com.rodrigocso.groceries.dto.BrandDto;
 import com.rodrigocso.groceries.exception.ControllerExceptionHandler;
-import com.rodrigocso.groceries.service.facade.BrandFacade;
+import com.rodrigocso.groceries.model.Brand;
+import com.rodrigocso.groceries.repository.BrandRepository;
 import com.rodrigocso.groceries.test.util.builder.BrandBuilder;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,12 +32,12 @@ public class BrandControllerTests {
     private MockMvc mvc;
 
     @Mock
-    private BrandFacade brandFacade;
+    private BrandRepository brandRepository;
 
     @InjectMocks
     private BrandController brandController;
 
-    private JacksonTester<BrandDto> jsonBrandDto;
+    private JacksonTester<Brand> jsonBrandDto;
 
     @BeforeEach
     public void setup() {
@@ -49,49 +49,49 @@ public class BrandControllerTests {
 
     @Test
     public void whenGetBrands_thenReturnNonEmptyBrandArray() throws Exception {
-        List<BrandDto> mockBrands = Lists.newArrayList(
-                BrandBuilder.builder().withName("Kirkland").buildDto(),
-                BrandBuilder.builder().withName("Apple").buildDto());
+        List<Brand> testBrands = Lists.newArrayList(
+                BrandBuilder.builder().withName("Kirkland").build(),
+                BrandBuilder.builder().withName("Apple").build());
 
-        when(brandFacade.findAll()).thenReturn(mockBrands);
+        when(brandRepository.findAll()).thenReturn(testBrands);
 
         mvc.perform(get("/brands"))
                 .andExpect(status().isOk())
-                .andExpect(responseBody().containsObjectAsJson(mockBrands.toArray(), BrandDto[].class));
+                .andExpect(responseBody().containsObjectAsJson(testBrands.toArray(), Brand[].class));
     }
 
     @Test
     public void whenPostBrandWithoutName_thenReturn400AndErrorResult() throws Exception {
         mvc.perform(post("/brands")
                 .contentType("application/json")
-                .content(jsonBrandDto.write(BrandBuilder.builder().withName("").buildDto()).getJson()))
+                .content(jsonBrandDto.write(BrandBuilder.builder().withName("").build()).getJson()))
                 .andExpect(status().isBadRequest())
                 .andExpect(responseBody().containsError("name", "IS_REQUIRED"));
     }
 
     @Test
     public void whenGetNonExistingBrandById_thenReturn404() throws Exception {
-        when(brandFacade.findById(5)).thenReturn(Optional.empty());
+        when(brandRepository.findById(5L)).thenReturn(Optional.empty());
         mvc.perform(get("/brands/5")).andExpect(status().isNotFound());
     }
 
     @Test
     public void whenPostBrandThatAlreadyExists_thenReturn409() throws Exception {
-        when(brandFacade.save(any(BrandDto.class))).thenThrow(new DataIntegrityViolationException("Oops"));
+        when(brandRepository.save(any(Brand.class))).thenThrow(new DataIntegrityViolationException("Oops"));
         mvc.perform(post("/brands")
                 .contentType("application/json")
-                .content(jsonBrandDto.write(BrandBuilder.builder().buildDto()).getJson()))
+                .content(jsonBrandDto.write(BrandBuilder.builder().build()).getJson()))
                 .andExpect(status().isConflict());
     }
 
     @Test
     public void whenPutValidExistingBrand_thenReturn200() throws Exception {
-        BrandDto dto = BrandBuilder.builder().withId(1).buildDto();
-        when(brandFacade.findById(1)).thenReturn(Optional.of(dto));
-        when(brandFacade.save(any(BrandDto.class))).thenReturn(dto);
+        Brand brand = BrandBuilder.builder().withId(1L).build();
+        when(brandRepository.findById(1L)).thenReturn(Optional.of(brand));
+        when(brandRepository.save(any(Brand.class))).thenReturn(brand);
         mvc.perform(put("/brands/1")
                 .contentType("application/json")
-                .content(jsonBrandDto.write(dto).getJson()))
+                .content(jsonBrandDto.write(brand).getJson()))
                 .andExpect(status().isOk());
     }
 
@@ -99,7 +99,7 @@ public class BrandControllerTests {
     public void whenPutMismatchedId_thenReturn400() throws Exception {
         mvc.perform(put("/brands/1")
                 .contentType("application/json")
-                .content(jsonBrandDto.write(BrandBuilder.builder().withId(2).buildDto()).getJson()))
+                .content(jsonBrandDto.write(BrandBuilder.builder().withId(2L).build()).getJson()))
                 .andExpect(status().isBadRequest());
     }
 
@@ -112,10 +112,10 @@ public class BrandControllerTests {
 
     @Test
     public void whenPutNonExistingBrand_thenReturn404() throws Exception {
-        when(brandFacade.findById(1)).thenReturn(Optional.empty());
+        when(brandRepository.findById(1L)).thenReturn(Optional.empty());
         mvc.perform(put("/brands/1")
                 .contentType("application/json")
-                .content(jsonBrandDto.write(BrandBuilder.builder().withId(1).buildDto()).getJson()))
+                .content(jsonBrandDto.write(BrandBuilder.builder().withId(1L).build()).getJson()))
                 .andExpect(status().isNotFound());
     }
 }

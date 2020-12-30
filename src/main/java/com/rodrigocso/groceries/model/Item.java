@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 public class Item {
     @Id
     @GeneratedValue
-    private Integer id;
+    private Long id;
 
     @NotNull(message = "IS_REQUIRED")
     @ManyToOne(fetch = FetchType.LAZY)
@@ -24,11 +24,11 @@ public class Item {
     @Size(max = 3, message = "MAX_3_CHARS")
     private String unit;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

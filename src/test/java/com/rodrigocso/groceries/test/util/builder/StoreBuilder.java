@@ -1,11 +1,9 @@
 package com.rodrigocso.groceries.test.util.builder;
 
-import com.rodrigocso.groceries.dto.StoreDto;
 import com.rodrigocso.groceries.model.Store;
-import com.rodrigocso.groceries.service.mapper.StoreMapper;
 
 public class StoreBuilder {
-    private Integer id;
+    private Long id;
     private String name;
     private String city;
     private Float latitude;
@@ -27,21 +25,13 @@ public class StoreBuilder {
         return makeStore();
     }
 
-    public StoreDto buildDto() {
-        return StoreMapper.toStoreDto(makeStore());
-    }
-
     public StoreBuilder from(Store template) {
         id = template.getId();
         name = template.getName();
         return this;
     }
 
-    public StoreBuilder from(StoreDto template) {
-        return from(StoreMapper.toStore(template));
-    }
-
-    public StoreBuilder withId(Integer id) {
+    public StoreBuilder withId(Long id) {
         this.id = id;
         return this;
     }

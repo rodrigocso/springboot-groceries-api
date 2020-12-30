@@ -1,11 +1,9 @@
 package com.rodrigocso.groceries.test.util.builder;
 
-import com.rodrigocso.groceries.dto.BrandDto;
 import com.rodrigocso.groceries.model.Brand;
-import com.rodrigocso.groceries.service.mapper.BrandMapper;
 
 public class BrandBuilder {
-    private Integer id;
+    private Long id;
     private String name;
 
     private BrandBuilder() {
@@ -21,21 +19,13 @@ public class BrandBuilder {
         return makeBrand();
     }
 
-    public BrandDto buildDto() {
-        return BrandMapper.toBrandDto(makeBrand());
-    }
-
     public BrandBuilder from(Brand template) {
         id = template.getId();
         name = template.getName();
         return this;
     }
 
-    public BrandBuilder from(BrandDto template) {
-        return from(BrandMapper.toBrand(template));
-    }
-
-    public BrandBuilder withId(Integer id) {
+    public BrandBuilder withId(Long id) {
         this.id = id;
         return this;
     }

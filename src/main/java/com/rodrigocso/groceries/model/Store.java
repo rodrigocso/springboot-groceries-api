@@ -11,7 +11,7 @@ import javax.validation.constraints.NotBlank;
 public class Store {
     @Id
     @GeneratedValue
-    private Integer id;
+    private Long id;
 
     @NotBlank(message = "IS_REQUIRED")
     private String name;
@@ -26,11 +26,11 @@ public class Store {
     @Max(180)
     private Float longitude;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

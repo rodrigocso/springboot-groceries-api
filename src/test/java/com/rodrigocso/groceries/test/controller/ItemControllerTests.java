@@ -2,9 +2,9 @@ package com.rodrigocso.groceries.test.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rodrigocso.groceries.controller.ItemController;
-import com.rodrigocso.groceries.dto.ItemDto;
 import com.rodrigocso.groceries.exception.ControllerExceptionHandler;
-import com.rodrigocso.groceries.service.facade.ItemFacade;
+import com.rodrigocso.groceries.model.Item;
+import com.rodrigocso.groceries.repository.ItemRepository;
 import com.rodrigocso.groceries.test.util.builder.ItemBuilder;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,12 +33,12 @@ public class ItemControllerTests {
     private MockMvc mvc;
 
     @Mock
-    private ItemFacade itemFacade;
+    private ItemRepository itemRepository;
 
     @InjectMocks
     private ItemController itemController;
 
-    private JacksonTester<ItemDto> jsonItemDto;
+    private JacksonTester<Item> jsonItem;
 
     @BeforeEach
     public void setup() {
@@ -50,66 +50,66 @@ public class ItemControllerTests {
 
     @Test
     public void whenGetItems_thenReturnItemArray() throws Exception {
-        List<ItemDto> mockItems = Lists.newArrayList(
-                ItemBuilder.builder().buildDto(),
-                ItemBuilder.builder().buildDto());
+        List<Item> mockItems = Lists.newArrayList(
+                ItemBuilder.builder().build(),
+                ItemBuilder.builder().build());
 
-        when(itemFacade.findAll()).thenReturn(mockItems);
+        when(itemRepository.findAll()).thenReturn(mockItems);
 
         mvc.perform(get("/items"))
                 .andExpect(status().isOk())
-                .andExpect(responseBody().containsObjectAsJson(mockItems.toArray(), ItemDto[].class));
+                .andExpect(responseBody().containsObjectAsJson(mockItems.toArray(), Item[].class));
     }
 
     @Test
     public void whenGetItemByIdExists_thenReturnItem() throws Exception {
-        ItemDto testItem = ItemBuilder.builder().buildDto();
-        when(itemFacade.findById(1)).thenReturn(Optional.of(testItem));
+        Item testItem = ItemBuilder.builder().build();
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(testItem));
         mvc.perform(get("/items/1"))
                 .andExpect(status().isOk())
-                .andExpect(responseBody().containsObjectAsJson(testItem, ItemDto.class));
+                .andExpect(responseBody().containsObjectAsJson(testItem, Item.class));
     }
 
     @Test
     public void whenGetItemByIdDoesNotExist_thenReturn404() throws Exception {
-        when(itemFacade.findById(1)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND));
+        when(itemRepository.findById(1L)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND));
         mvc.perform(get("/items/1")).andExpect(status().isNotFound());
     }
 
     @Test
     public void whenGetItemsByProductId_thenReturnItemArray() throws Exception {
-        List<ItemDto> mockItems = Lists.newArrayList(
-                ItemBuilder.builder().buildDto(),
-                ItemBuilder.builder().buildDto());
+        List<Item> testItems = Lists.newArrayList(
+                ItemBuilder.builder().build(),
+                ItemBuilder.builder().build());
 
-        when(itemFacade.findAllByProductId(any(Integer.class))).thenReturn(mockItems);
+        when(itemRepository.findByProductId(any(Long.class))).thenReturn(testItems);
 
         mvc.perform(get("/items/product/1"))
                 .andExpect(status().isOk())
-                .andExpect(responseBody().containsObjectAsJson(mockItems.toArray(), ItemDto[].class));
+                .andExpect(responseBody().containsObjectAsJson(testItems.toArray(), Item[].class));
     }
 
     @Test
     public void whenPostValidItem_thenReturn200() throws Exception {
-        ItemDto dto = ItemBuilder.builder().buildDto();
-        when(itemFacade.save(any(ItemDto.class))).thenReturn(dto);
+        Item dto = ItemBuilder.builder().build();
+        when(itemRepository.save(any(Item.class))).thenReturn(dto);
         mvc.perform(post("/items")
                 .contentType("application/json")
-                .content(jsonItemDto.write(dto).getJson()))
+                .content(jsonItem.write(dto).getJson()))
                 .andExpect(status().isOk())
-                .andExpect(responseBody().containsObjectAsJson(dto, ItemDto.class));
+                .andExpect(responseBody().containsObjectAsJson(dto, Item.class));
     }
 
     @Test
     public void whenPostInvalidItem_thenReturn400() throws Exception {
-        ItemDto dto = ItemBuilder.builder()
+        Item dto = ItemBuilder.builder()
                 .withPackageSize(-5F)
                 .withProduct(null)
                 .withUnit(null)
-                .buildDto();
+                .build();
         mvc.perform(post("/items")
                 .contentType("application/json")
-                .content(jsonItemDto.write(dto).getJson()))
+                .content(jsonItem.write(dto).getJson()))
                 .andExpect(status().isBadRequest())
                 .andExpect(responseBody().containsError("packageSize", "HAS_TO_BE_POSITIVE"))
                 .andExpect(responseBody().containsError("product", "IS_REQUIRED"))
@@ -118,14 +118,14 @@ public class ItemControllerTests {
 
     @Test
     public void whenPutValidItem_thenReturn200() throws Exception {
-        ItemDto dto = ItemBuilder.builder().withId(1).buildDto();
-        when(itemFacade.findById(1)).thenReturn(Optional.of(dto));
-        when(itemFacade.save(any(ItemDto.class))).thenReturn(dto);
+        Item dto = ItemBuilder.builder().withId(1L).build();
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(dto));
+        when(itemRepository.save(any(Item.class))).thenReturn(dto);
         mvc.perform(put("/items/1")
                 .contentType("application/json")
-                .content(jsonItemDto.write(dto).getJson()))
+                .content(jsonItem.write(dto).getJson()))
                 .andExpect(status().isOk())
-                .andExpect(responseBody().containsObjectAsJson(dto, ItemDto.class));
+                .andExpect(responseBody().containsObjectAsJson(dto, Item.class));
     }
 
     @Test
@@ -137,10 +137,10 @@ public class ItemControllerTests {
 
     @Test
     public void whenPutNonExistingItem_thenReturn404() throws Exception {
-        when(itemFacade.findById(1)).thenReturn(Optional.empty());
+        when(itemRepository.findById(1L)).thenReturn(Optional.empty());
         mvc.perform(put("/items/1")
                 .contentType("application/json")
-                .content(jsonItemDto.write(ItemBuilder.builder().withId(1).buildDto()).getJson()))
+                .content(jsonItem.write(ItemBuilder.builder().withId(1L).build()).getJson()))
                 .andExpect(status().isNotFound());
     }
 }

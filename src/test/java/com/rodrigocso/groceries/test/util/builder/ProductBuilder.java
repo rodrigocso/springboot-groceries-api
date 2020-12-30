@@ -1,12 +1,10 @@
 package com.rodrigocso.groceries.test.util.builder;
 
-import com.rodrigocso.groceries.dto.ProductDto;
 import com.rodrigocso.groceries.model.Brand;
 import com.rodrigocso.groceries.model.Product;
-import com.rodrigocso.groceries.service.mapper.ProductMapper;
 
 public class ProductBuilder {
-    private Integer id;
+    private Long id;
     private String name;
     private Brand brand;
 
@@ -24,10 +22,6 @@ public class ProductBuilder {
         return makeProduct();
     }
 
-    public ProductDto buildDto() {
-        return ProductMapper.toProductDto(makeProduct());
-    }
-
     public ProductBuilder from(Product template) {
         id = template.getId();
         name = template.getName();
@@ -35,11 +29,7 @@ public class ProductBuilder {
         return this;
     }
 
-    public ProductBuilder from(ProductDto template) {
-        return from(ProductMapper.toProduct(template));
-    }
-
-    public ProductBuilder withId(Integer id) {
+    public ProductBuilder withId(Long id) {
         this.id = id;
         return this;
     }

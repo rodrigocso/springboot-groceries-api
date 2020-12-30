@@ -1,7 +1,7 @@
 package com.rodrigocso.groceries.controller;
 
-import com.rodrigocso.groceries.dto.StoreDto;
-import com.rodrigocso.groceries.service.facade.StoreFacade;
+import com.rodrigocso.groceries.model.Store;
+import com.rodrigocso.groceries.repository.StoreRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,32 +14,32 @@ import java.net.URI;
 @RestController
 @RequestMapping(path = "/stores")
 public class StoreController {
-    private final StoreFacade storeFacade;
+    private final StoreRepository storeRepository;
 
-    public StoreController(StoreFacade storeFacade) {
-        this.storeFacade = storeFacade;
+    public StoreController(StoreRepository storeRepository) {
+        this.storeRepository = storeRepository;
     }
 
     @GetMapping
-    public ResponseEntity<Iterable<StoreDto>> findAll() {
-        return ResponseEntity.ok(storeFacade.findAll());
+    public ResponseEntity<Iterable<Store>> findAll() {
+        return ResponseEntity.ok(storeRepository.findAll());
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<StoreDto> findById(@PathVariable Integer id) {
-        return storeFacade.findById(id)
+    public ResponseEntity<Store> findById(@PathVariable Long id) {
+        return storeRepository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping(path = "/search")
-    public ResponseEntity<Iterable<StoreDto>> findByNameContaining(@RequestParam String partialName) {
-        return ResponseEntity.ok(storeFacade.findByNameContaining(partialName));
+    public ResponseEntity<Iterable<Store>> findByNameContaining(@RequestParam String partialName) {
+        return ResponseEntity.ok(storeRepository.findByNameContainingIgnoreCase(partialName));
     }
 
     @PostMapping
-    public ResponseEntity<StoreDto> addStore(@Valid @RequestBody StoreDto newStore) {
-        StoreDto savedStore = storeFacade.save(newStore);
+    public ResponseEntity<Store> addStore(@Valid @RequestBody Store newStore) {
+        Store savedStore = storeRepository.save(newStore);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(savedStore.getId())
@@ -48,13 +48,13 @@ public class StoreController {
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<StoreDto> updateStore(@Valid @RequestBody StoreDto store, @PathVariable Integer id) {
+    public ResponseEntity<Store> updateStore(@Valid @RequestBody Store store, @PathVariable Long id) {
         if (!id.equals(store.getId())) {
             return ResponseEntity.badRequest().build();
         }
-        if (storeFacade.findById(id).isEmpty()) {
+        if (storeRepository.findById(id).isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(storeFacade.save(store));
+        return ResponseEntity.ok(storeRepository.save(store));
     }
 }
