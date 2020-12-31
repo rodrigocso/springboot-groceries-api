@@ -1,53 +1,50 @@
 package com.rodrigocso.groceries.controller;
 
-import com.rodrigocso.groceries.model.Item;
-import com.rodrigocso.groceries.repository.ItemRepository;
+import com.rodrigocso.groceries.dto.ItemDto;
+import com.rodrigocso.groceries.service.facade.ItemFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/items")
 public class ItemController {
-    private final ItemRepository itemRepository;
+    private final ItemFacade itemFacade;
 
-    public ItemController(ItemRepository itemRepository) {
-        this.itemRepository = itemRepository;
+    public ItemController(ItemFacade itemFacade) {
+        this.itemFacade = itemFacade;
     }
 
     @GetMapping
-    public ResponseEntity<Iterable<Item>> findAll() {
-        return ResponseEntity.ok(itemRepository.findAll());
+    public ResponseEntity<List<ItemDto>> findAll() {
+        return ResponseEntity.ok(itemFacade.findAll());
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<Item> findItemById(@PathVariable Long id) {
-        return itemRepository.findById(id)
+    public ResponseEntity<ItemDto> findById(@PathVariable Long id) {
+        return itemFacade.findById(id)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping(path = "/product/{productId}")
-    public ResponseEntity<Iterable<Item>> findAllItemsByProduct(@PathVariable Long productId) {
-        return ResponseEntity.ok(itemRepository.findByProductId(productId));
+    public ResponseEntity<List<ItemDto>> findByProductId(@PathVariable Long productId) {
+        return itemFacade.findByProductId(productId)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping
-    public ResponseEntity<Item> addItem(@Valid @RequestBody Item item) {
-        return ResponseEntity.ok(itemRepository.save(item));
+    public ResponseEntity<ItemDto> create(@Valid @RequestBody ItemDto item) {
+        return ResponseEntity.ok(itemFacade.create(item));
     }
 
     @PutMapping(path = "{id}")
-    public ResponseEntity<Item> updateItem(@Valid @RequestBody Item item, @PathVariable Long id) {
-        if (!id.equals(item.getId())) {
-            return ResponseEntity.badRequest().build();
-        }
-        if (itemRepository.findById(id).isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(itemRepository.save(item));
+    public ResponseEntity<ItemDto> update(@Valid @RequestBody ItemDto item, @PathVariable Long id) {
+        return ResponseEntity.ok(itemFacade.update(id, item));
     }
 }
