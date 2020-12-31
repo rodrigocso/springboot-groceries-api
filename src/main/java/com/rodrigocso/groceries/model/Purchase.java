@@ -7,7 +7,7 @@ import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Positive;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 public class Purchase {
@@ -21,7 +21,7 @@ public class Purchase {
 
     @NotNull
     @PastOrPresent
-    private Date transactionDate;
+    private LocalDate transactionDate;
 
     @NotNull
     @ManyToOne
@@ -75,11 +75,11 @@ public class Purchase {
         this.price = price;
     }
 
-    public Date getTransactionDate() {
+    public LocalDate getTransactionDate() {
         return transactionDate;
     }
 
-    public void setTransactionDate(Date transactionDate) {
+    public void setTransactionDate(LocalDate transactionDate) {
         this.transactionDate = transactionDate;
     }
 }
