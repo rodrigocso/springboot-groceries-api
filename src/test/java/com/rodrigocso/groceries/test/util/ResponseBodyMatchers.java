@@ -1,6 +1,7 @@
 package com.rodrigocso.groceries.test.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.rodrigocso.groceries.exception.ErrorResponse;
 import com.rodrigocso.groceries.exception.FieldValidationError;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -18,6 +19,7 @@ public class ResponseBodyMatchers {
     }
 
     public <T> ResultMatcher containsObjectAsJson(Object expectedObject, Class<T> targetClass) {
+        objectMapper.registerModule(new JavaTimeModule());
         return mvcResult -> {
             String json = mvcResult.getResponse().getContentAsString();
             T actualObject = objectMapper.readValue(json, targetClass);
