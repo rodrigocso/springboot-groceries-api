@@ -3,9 +3,9 @@ package com.rodrigocso.groceries.service.mapper;
 import com.rodrigocso.groceries.dto.ProductDto;
 import com.rodrigocso.groceries.model.Product;
 import com.rodrigocso.groceries.repository.BrandRepository;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 public class ProductMapper {
     private final BrandRepository brandRepository;
 
