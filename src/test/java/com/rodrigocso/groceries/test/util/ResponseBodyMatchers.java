@@ -27,6 +27,10 @@ public class ResponseBodyMatchers {
         };
     }
 
+    public <T> ResultMatcher isEqualTo(String expectedJsonBody) {
+        return mvcResult -> assertThat(mvcResult.getResponse().getContentAsString()).isEqualTo(expectedJsonBody);
+    }
+
     public ResultMatcher containsError(String expectedFieldName, String expectedMessage) {
         return mvcResult -> {
             String json = mvcResult.getResponse().getContentAsString();
