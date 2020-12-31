@@ -22,7 +22,13 @@ public class StoreBuilder {
     }
 
     public Store build() {
-        return makeStore();
+        Store s = new Store();
+        s.setId(id);
+        s.setName(name);
+        s.setCity(city);
+        s.setLatitude(latitude);
+        s.setLongitude(longitude);
+        return s;
     }
 
     public StoreBuilder from(Store template) {
@@ -54,15 +60,5 @@ public class StoreBuilder {
     public StoreBuilder withLongitude(Float longitude) {
         this.longitude = longitude;
         return this;
-    }
-
-    private Store makeStore() {
-        Store s = new Store();
-        s.setId(id);
-        s.setName(name);
-        s.setCity(city);
-        s.setLatitude(latitude);
-        s.setLongitude(longitude);
-        return s;
     }
 }

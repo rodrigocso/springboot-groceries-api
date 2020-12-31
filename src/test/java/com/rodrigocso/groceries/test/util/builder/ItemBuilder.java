@@ -11,7 +11,7 @@ public class ItemBuilder {
 
     private ItemBuilder() {
         id = null;
-        product = ProductBuilder.builder().build();
+        product = ProductBuilder.builder().withId(1L).build();
         packageSize = 1F;
         unit = "kg";
     }
@@ -21,7 +21,12 @@ public class ItemBuilder {
     }
 
     public Item build() {
-        return makeItem();
+        Item item = new Item();
+        item.setId(id);
+        item.setProduct(product);
+        item.setPackageSize(packageSize);
+        item.setUnit(unit);
+        return item;
     }
 
     public ItemBuilder from(Item template) {
@@ -51,14 +56,5 @@ public class ItemBuilder {
     public ItemBuilder withUnit(String unit) {
         this.unit = unit;
         return this;
-    }
-
-    private Item makeItem() {
-        Item item = new Item();
-        item.setId(id);
-        item.setProduct(product);
-        item.setPackageSize(packageSize);
-        item.setUnit(unit);
-        return item;
     }
 }

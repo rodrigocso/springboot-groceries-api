@@ -11,7 +11,7 @@ public class ProductBuilder {
     private ProductBuilder() {
         id = null;
         name = "Some product";
-        brand = BrandBuilder.builder().build();
+        brand = BrandBuilder.builder().withId(1L).build();
     }
 
     public static ProductBuilder builder() {
@@ -19,7 +19,11 @@ public class ProductBuilder {
     }
 
     public Product build() {
-        return makeProduct();
+        Product p = new Product();
+        p.setId(id);
+        p.setName(name);
+        p.setBrand(brand);
+        return p;
     }
 
     public ProductBuilder from(Product template) {
@@ -42,13 +46,5 @@ public class ProductBuilder {
     public ProductBuilder withBrand(Brand brand) {
         this.brand = brand;
         return this;
-    }
-
-    private Product makeProduct() {
-        Product p = new Product();
-        p.setId(id);
-        p.setName(name);
-        p.setBrand(brand);
-        return p;
     }
 }

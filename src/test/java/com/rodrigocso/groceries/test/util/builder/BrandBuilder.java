@@ -16,7 +16,10 @@ public class BrandBuilder {
     }
 
     public Brand build() {
-        return makeBrand();
+        Brand b = new Brand();
+        b.setId(id);
+        b.setName(name);
+        return b;
     }
 
     public BrandBuilder from(Brand template) {
@@ -33,12 +36,5 @@ public class BrandBuilder {
     public BrandBuilder withName(String name) {
         this.name = name;
         return this;
-    }
-
-    private Brand makeBrand() {
-        Brand b = new Brand();
-        b.setId(id);
-        b.setName(name);
-        return b;
     }
 }
