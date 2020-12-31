@@ -2,9 +2,11 @@ package com.rodrigocso.groceries.test.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rodrigocso.groceries.controller.ProductController;
+import com.rodrigocso.groceries.dto.ProductDto;
 import com.rodrigocso.groceries.exception.ControllerExceptionHandler;
-import com.rodrigocso.groceries.model.Product;
-import com.rodrigocso.groceries.repository.ProductRepository;
+import com.rodrigocso.groceries.repository.BrandRepository;
+import com.rodrigocso.groceries.service.facade.ProductFacade;
+import com.rodrigocso.groceries.service.mapper.ProductMapper;
 import com.rodrigocso.groceries.test.util.builder.ProductBuilder;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,12 +16,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.rodrigocso.groceries.test.util.ResponseBodyMatchers.responseBody;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,17 +33,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 public class ProductControllerTests {
     private MockMvc mvc;
+    private ProductMapper productMapper;
+    private JacksonTester<ProductDto> jsonProduct;
+    private JacksonTester<List<ProductDto>> jsonProductList;
 
     @Mock
-    private ProductRepository productRepository;
+    private BrandRepository brandRepository;
+
+    @Mock
+    private ProductFacade productFacade;
 
     @InjectMocks
     private ProductController productController;
 
-    private JacksonTester<Product> jsonProduct;
-
     @BeforeEach
     public void setup() {
+        productMapper = new ProductMapper(brandRepository);
         JacksonTester.initFields(this, new ObjectMapper());
         mvc = MockMvcBuilders.standaloneSetup(productController)
                 .setControllerAdvice(new ControllerExceptionHandler())
@@ -48,104 +56,105 @@ public class ProductControllerTests {
     }
 
     @Test
-    public void whenGetProducts_thenReturnNonEmptyProductArray() throws Exception {
-        List<Product> testProducts = Lists.newArrayList(
+    public void canGetAllProducts() throws Exception {
+        List<ProductDto> products = Lists.newArrayList(
                 ProductBuilder.builder().build(),
                 ProductBuilder.builder().build()
-        );
+        ).stream().map(productMapper::toDto).collect(Collectors.toList());
 
-        when(productRepository.findAll()).thenReturn(testProducts);
+        when(productFacade.findAll()).thenReturn(products);
 
         mvc.perform(get("/products"))
                 .andExpect(status().isOk())
-                .andExpect(responseBody().containsObjectAsJson(testProducts.toArray(), Product[].class));
+                .andExpect(responseBody().isEqualTo(jsonProductList.write(products).getJson()));
     }
 
     @Test
-    public void whenPostValidProduct_thenReturn200() throws Exception {
-        Product dto = ProductBuilder.builder().withId(1L).build();
-        when(productRepository.save(any(Product.class))).thenReturn(dto);
-        mvc.perform(post("/products")
-                .contentType("application/json")
-                .content(jsonProduct.write(dto).getJson()))
-                .andExpect(status().isCreated())
-                .andExpect(responseBody().containsObjectAsJson(dto, Product.class));
+    public void canGetProductByIdWhenExists() throws Exception {
+        ProductDto product = productMapper.toDto(ProductBuilder.builder().build());
+        when(productFacade.findById(1L)).thenReturn(Optional.of(product));
+        mvc.perform(get("/products/1"))
+                .andExpect(status().isOk())
+                .andExpect(responseBody().isEqualTo(jsonProduct.write(product).getJson()));
     }
 
     @Test
-    public void whenPostProductWithoutName_thenReturn400AndErrorResult() throws Exception {
-        mvc.perform(post("/products")
-                .contentType("application/json")
-                .content(jsonProduct.write(ProductBuilder.builder().withName("").build()).getJson()))
-                .andExpect(status().isBadRequest())
-                .andExpect(responseBody().containsError("name", "IS_REQUIRED"));
-
+    public void whenGetProductByIdDoesNotExist_thenReturnNotFound() throws Exception {
+        when(productFacade.findById(1L)).thenReturn(Optional.empty());
+        mvc.perform(get("/products/1"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    public void whenGetNonExistingProductById_thenReturn404() throws Exception {
-        when(productRepository.findById(1L)).thenReturn(Optional.empty());
-        mvc.perform(get("/products/1")).andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void whenPostProductThatAlreadyExists_thenReturn409() throws Exception {
-        when(productRepository.save(any(Product.class))).thenThrow(new DataIntegrityViolationException("Oops"));
-        mvc.perform(post("/products")
-                .contentType("application/json")
-                .content(jsonProduct.write(ProductBuilder.builder().build()).getJson()))
-                .andExpect(status().isConflict());
-    }
-
-    @Test
-    public void whenPostWithoutBody_thenReturn400() throws Exception {
-        mvc.perform(post("/products").contentType("application/json")).andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void whenPutValidExistingProduct_thenReturn200() throws Exception {
-        Product dto = ProductBuilder.builder().withId(1L).build();
-        when(productRepository.findById(1L)).thenReturn(Optional.of(dto));
-        when(productRepository.save(any(Product.class))).thenReturn(dto);
-        mvc.perform(put("/products/1")
-                .contentType("application/json")
-                .content(jsonProduct.write(dto).getJson()))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void whenGetProductsByBrandId_thenReturnProductList() throws Exception {
-        List<Product> mockProducts = Lists.newArrayList(
+    public void canSearchProductsByName() throws Exception {
+        List<ProductDto> products = Lists.newArrayList(
                 ProductBuilder.builder().build(),
                 ProductBuilder.builder().build()
-        );
-        when(productRepository.findByBrandId(1L)).thenReturn(mockProducts);
+        ).stream().map(productMapper::toDto).collect(Collectors.toList());
+
+        when(productFacade.findByNameContaining("query")).thenReturn(products);
+
+        mvc.perform(get("/products/search")
+                .param("name", "query"))
+                .andExpect(status().isOk())
+                .andExpect(responseBody().isEqualTo(jsonProductList.write(products).getJson()));
+    }
+
+    @Test
+    public void canGetProductsByBrandId() throws Exception {
+        List<ProductDto> products = Lists.newArrayList(
+                ProductBuilder.builder().build(),
+                ProductBuilder.builder().build()
+        ).stream().map(productMapper::toDto).collect(Collectors.toList());
+
+        when(productFacade.findByBrandId(1L)).thenReturn(Optional.of(products));
         mvc.perform(get("/products/brand/1"))
                 .andExpect(status().isOk())
-                .andExpect(responseBody().containsObjectAsJson(mockProducts.toArray(), Product[].class));
+                .andExpect(responseBody().isEqualTo(jsonProductList.write(products).getJson()));
     }
 
     @Test
-    public void whenPutWithoutBody_thenReturn400() throws Exception {
-        mvc.perform(put("/products/1")
-                .contentType("application/json"))
+    public void whenGetProductsByBrandIdThatDoesNotExist_thenReturnNotFound() throws Exception {
+        when(productFacade.findByBrandId(1L)).thenReturn(Optional.empty());
+        mvc.perform(get("/products/brand/1")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void canCreateNewProduct() throws Exception {
+        ProductDto dto = productMapper.toDto(ProductBuilder.builder().withId(1L).build());
+        when(productFacade.create(any(ProductDto.class))).thenReturn(dto);
+        mvc.perform(post("/products")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonProduct.write(dto).getJson()))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void whenCreateInvalidNewProduct_thenReturnBadRequest() throws Exception {
+        ProductDto dto = productMapper.toDto(ProductBuilder.builder().withName("").build());
+        mvc.perform(post("/products")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonProduct.write(dto).getJson()))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void whenPutMismatchedId_thenReturn400() throws Exception {
+    public void canUpdateProduct() throws Exception {
+        ProductDto dto = productMapper.toDto(ProductBuilder.builder().build());
+        when(productFacade.update(any(Long.class), any(ProductDto.class))).thenReturn(dto);
         mvc.perform(put("/products/1")
-                .contentType("application/json")
-                .content(jsonProduct.write(ProductBuilder.builder().withId(2L).build()).getJson()))
-                .andExpect(status().isBadRequest());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonProduct.write(dto).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(responseBody().isEqualTo(jsonProduct.write(dto).getJson()));
     }
 
     @Test
-    public void whenPutNonExistingProduct_thenReturn404() throws Exception {
-        when(productRepository.findById(1L)).thenReturn(Optional.empty());
+    public void whenUpdateWithInvalidProduct_thenReturnBadRequest() throws Exception {
+        ProductDto dto = productMapper.toDto(ProductBuilder.builder().withName("").build());
         mvc.perform(put("/products/1")
-                .contentType("application/json")
-                .content(jsonProduct.write(ProductBuilder.builder().withId(1L).build()).getJson()))
-                .andExpect(status().isNotFound());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonProduct.write(dto).getJson()))
+                .andExpect(status().isBadRequest());
     }
 }

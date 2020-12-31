@@ -1,7 +1,8 @@
 package com.rodrigocso.groceries.controller;
 
-import com.rodrigocso.groceries.model.Product;
+import com.rodrigocso.groceries.dto.ProductDto;
 import com.rodrigocso.groceries.repository.ProductRepository;
+import com.rodrigocso.groceries.service.facade.ProductFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,56 +11,55 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/products")
 public class ProductController {
+    private final ProductFacade productFacade;
     private final ProductRepository productRepository;
 
-    public ProductController(ProductRepository productRepository) {
+    public ProductController(ProductFacade productFacade, ProductRepository productRepository) {
+        this.productFacade = productFacade;
         this.productRepository = productRepository;
     }
 
     @GetMapping
-    public ResponseEntity<Iterable<Product>> getAllProducts() {
-        return ResponseEntity.ok(productRepository.findAll());
+    public ResponseEntity<List<ProductDto>> findAll() {
+        return ResponseEntity.ok(productFacade.findAll());
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<Product> findProductById(@PathVariable Long id) {
-        return productRepository.findById(id)
+    public ResponseEntity<ProductDto> findById(@PathVariable Long id) {
+        return productFacade.findById(id)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping(path = "/search")
-    public ResponseEntity<Iterable<Product>> findProductByName(@RequestParam String name) {
-        return ResponseEntity.ok(productRepository.findByNameContainingIgnoreCase(name));
+    public ResponseEntity<List<ProductDto>> findByNameContaining(@RequestParam String name) {
+        return ResponseEntity.ok(productFacade.findByNameContaining(name));
     }
 
     @GetMapping(path = "/brand/{brandId}")
-    public ResponseEntity<Iterable<Product>> findAllProductsByBrand(@PathVariable Long brandId) {
-        return ResponseEntity.ok(productRepository.findByBrandId(brandId));
+    public ResponseEntity<List<ProductDto>> findByBrandId(@PathVariable Long brandId) {
+        return productFacade.findByBrandId(brandId)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping
-    public ResponseEntity<Product> addProduct(@Valid @RequestBody Product newProduct) {
-        Product savedProduct = this.productRepository.save(newProduct);
+    public ResponseEntity<ProductDto> create(@Valid @RequestBody ProductDto newProduct) {
+        ProductDto product = productFacade.create(newProduct);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(savedProduct.getId())
+                .buildAndExpand(product.getId())
                 .toUri();
-        return ResponseEntity.created(location).body(savedProduct);
+        return ResponseEntity.created(location).body(product);
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<Product> updateProduct(@Valid @RequestBody Product product, @PathVariable Long id) {
-        if (!id.equals(product.getId())) {
-            return ResponseEntity.badRequest().build();
-        }
-        if (productRepository.findById(id).isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(productRepository.save(product));
+    public ResponseEntity<ProductDto> update(@Valid @RequestBody ProductDto product, @PathVariable Long id) {
+        return ResponseEntity.ok(productFacade.update(id, product));
     }
 }
