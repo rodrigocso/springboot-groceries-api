@@ -27,7 +27,7 @@ public class ItemMapper {
     public Item toItem(ItemDto dto) {
         Item item = new Item();
         item.setId(dto.getId());
-        item.setProduct(productRepository.findById(dto.getId()).orElse(null));
+        item.setProduct(productRepository.findById(dto.getProductId()).orElse(null));
         item.setPackageSize(dto.getPackageSize());
         item.setUnit(dto.getUnit());
         return item;
