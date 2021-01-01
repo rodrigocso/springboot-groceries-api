@@ -60,7 +60,7 @@ public class ProductFacade {
         if (productRepository.findById(id).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        if (!dto.getId().equals(id)) {
+        if (!id.equals(dto.getId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         return productMapper.toDto(productRepository.save(productMapper.toProduct(dto)));
