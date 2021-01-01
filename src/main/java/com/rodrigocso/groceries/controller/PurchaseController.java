@@ -1,55 +1,56 @@
 package com.rodrigocso.groceries.controller;
 
-import com.rodrigocso.groceries.model.Purchase;
-import com.rodrigocso.groceries.repository.PurchaseRepository;
+import com.rodrigocso.groceries.dto.PurchaseDto;
+import com.rodrigocso.groceries.service.facade.PurchaseFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/purchases")
 public class PurchaseController {
-    private final PurchaseRepository purchaseRepository;
+    private final PurchaseFacade purchaseFacade;
 
-    public PurchaseController(PurchaseRepository purchaseRepository) {
-        this.purchaseRepository = purchaseRepository;
+    public PurchaseController(PurchaseFacade purchaseFacade) {
+        this.purchaseFacade = purchaseFacade;
     }
 
     @GetMapping
-    public ResponseEntity<Iterable<Purchase>> findAll() {
-        return ResponseEntity.ok(purchaseRepository.findAll());
+    public ResponseEntity<Iterable<PurchaseDto>> findAll() {
+        return ResponseEntity.ok(purchaseFacade.findAll());
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<Purchase> findById(@PathVariable Long id) {
-        return purchaseRepository.findById(id)
+    public ResponseEntity<PurchaseDto> findById(@PathVariable Long id) {
+        return purchaseFacade.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping(path = "/product/{productId}")
+    public ResponseEntity<List<PurchaseDto>> findByProductId(@PathVariable Long productId) {
+        return purchaseFacade.findByProductId(productId)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping
-    public ResponseEntity<Purchase> create(@RequestBody @Valid Purchase purchase) {
-        return ResponseEntity.ok(purchaseRepository.save(purchase));
+    public ResponseEntity<PurchaseDto> create(@RequestBody @Valid PurchaseDto purchase) {
+        return ResponseEntity.ok(purchaseFacade.create(purchase));
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<Purchase> update(@PathVariable Long id, @RequestBody @Valid Purchase purchase) {
-        if (!id.equals(purchase.getId())) {
-            return ResponseEntity.badRequest().build();
-        }
-        if (purchaseRepository.findById(id).isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(purchaseRepository.save(purchase));
+    public ResponseEntity<PurchaseDto> update(@PathVariable Long id, @RequestBody @Valid PurchaseDto purchase) {
+        return ResponseEntity.ok(purchaseFacade.update(id, purchase));
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Purchase> delete(@PathVariable Long id) {
-        purchaseRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        purchaseRepository.deleteById(id);
+    public ResponseEntity<PurchaseDto> delete(@PathVariable Long id) {
+        purchaseFacade.deleteById(id);
         return ResponseEntity.ok().build();
     }
 }
