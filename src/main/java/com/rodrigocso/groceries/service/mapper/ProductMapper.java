@@ -27,7 +27,9 @@ public class ProductMapper {
         Product product = new Product();
         product.setId(dto.getId());
         product.setName(dto.getName());
-        product.setBrand(brandRepository.findById(dto.getBrandId()).orElse(null));
+        if (dto.getBrandId() != null) {
+            product.setBrand(brandRepository.findById(dto.getBrandId()).orElse(null));
+        }
         return product;
     }
 }
