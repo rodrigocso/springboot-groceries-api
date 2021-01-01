@@ -11,7 +11,7 @@ public class ProductBuilder {
     private ProductBuilder() {
         id = null;
         name = "Some product";
-        brand = BrandBuilder.builder().withId(1L).build();
+        brand = null;
     }
 
     public static ProductBuilder builder() {
