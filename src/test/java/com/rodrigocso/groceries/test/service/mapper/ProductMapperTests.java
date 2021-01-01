@@ -32,7 +32,7 @@ public class ProductMapperTests {
 
     @Test
     public void canConvertToDto() {
-        Product p = ProductBuilder.builder().build();
+        Product p = ProductBuilder.builder().withBrand(BrandBuilder.builder().build()).build();
         ProductDto dto = productMapper.toDto(p);
 
         assertThat(dto.getId()).isEqualTo(p.getId());
