@@ -1,0 +1,38 @@
+version: "3.7"
+
+networks:
+  lan:
+
+services:
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: Dockerfile.debug
+    ports:
+      - 8080:8080
+    environment:
+      MYSQL_HOST: db
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - lan
+    command: java -Djava.security.egd=file:/dev/./urandom -jar /project/target/groceries-0.0.1-SNAPSHOT.jar
+
+  db:
+    image: mariadb
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3306:3306
+    volumes:
+      - ~/projects/docker-data/mariadb:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysql", "-h", "localhost", "-P", "3306", "-u", "root", "--password=root", "-e", "select 1", "groceries"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+    networks:
+      - lan
