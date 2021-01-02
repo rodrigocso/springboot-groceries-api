@@ -1,5 +1,7 @@
 package com.rodrigocso.groceries.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Positive;
@@ -13,6 +15,7 @@ public class PurchaseDto {
 
     @NotNull(message = "IS_REQUIRED")
     @PastOrPresent(message = "NO_FUTURE_DATE")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate transactionDate;
 
     @NotNull(message = "IS_REQUIRED")
