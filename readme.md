@@ -2,7 +2,7 @@
   Spring Boot REST API Example
 </h1>
 
-<h4 align="center">How to structure and test a Spring Boot application</h4>
+<h4 align="center">Structuring and testing a Spring Boot application</h4>
 
 <p align="center">
     <a alt="Java">
@@ -12,13 +12,10 @@
         <img src="https://img.shields.io/badge/Spring%20Boot-v2.4.1-6DB33F.svg" />
     </a>
     <a alt="Coverage">
-        <img src="https://img.shields.io/badge/coverage-92%25-31D843" />
+        <img src="https://img.shields.io/badge/coverage-95%25-31D843" />
     </a>
     <a alt="License">
         <img src="https://img.shields.io/badge/license-MIT-63B0CD.svg" />
-    </a>
-    <a alt="Work In Progress">
-        <img src="https://img.shields.io/badge/work-in%20progress-9E0031.svg" />
     </a>
 </p>
 
@@ -29,10 +26,53 @@
 4. [License](#License)
 
 ## Introduction ##
+Learning a new framework nowadays is much more streamlined due to the fact that there is
+a plethora of great blogs available with tutorials and examples for absolutely anything.
+As good as that is, nothing is perfect: more often than not, information is very fragmented,
+forcing the reader to jump back and forth between dozens of articles to be able to see the
+big picture.
+
+With that in mind, I took it upon myself to create this repository to serve as a reference to
+myself and hopefully others on how to get started building an enterprise grade REST API
+project using Spring Boot, to the best of my knowledge, of course.
 
 ## Design Philosophy ##
+For this project, the following design guidelines were adopted:
+* Only battle tested dependencies
+* Clean architecture (layer dependencies flow in a single direction)
+* Clean code (highly testable, following SOLID and DRY)
+* Ample automated testing (> 90% code coverage)
 
 ## Application ##
+This application will serve as the backend for a groceries price tracking app to be created
+using Angular. At the moment, the entities are:
+* **Store** (name and location)
+* **Brand** (name)
+* **Product** (name and **Brand**)
+* **Item** (**Product** and package size)
+* **Purchase** (**Store**, **Item**, purchase date, quantity and price)
+
+<img src="https://github.com/rodrigocso/springboot-groceries-api/blob/master/docs/images/relationships.jpg" alt="entity relationship"></a>
+
+You can **Purchase** an **Item** at a **Store**. An **Item** is how you package a
+**Product** to be sold. A **Product** may or may not have an associated **Brand**.
+
+Future features may include:
+* Possibility to create a shopping list (with price ranges, subtotal estimation etc.)
+* Add categories to products to allocate grocery expenses
+
+### Highlights ###
+This project showcases the usage of:
+* JPA Repositories with Hibernate
+    * A custom repository extending the generated one
+    * Criteria API is used with a simple `INNER JOIN`
+    * JPA Static Metamodel Generator (`get("field")` is not type safe)
+* H2 in memory database for automated tests
+* MariaDB as the data source
+* Ample testing with some interesting techniques
+    * Object builders with fluent API `Product p = ProductBuilder.builder().withName("P1").build();`
+    * Custom `ResultMatcher` to facilitate repetitive JSON body assertions
+* Docker compose to deploy MariaDB instance and the API
 
 ## License ##
 This project is licensed under the terms of the MIT license.

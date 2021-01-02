@@ -12,7 +12,7 @@
 	<artifactId>groceries</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>groceries</name>
-	<description>Demo project for Spring Boot</description>
+	<description>REST API for Groceries tracking</description>
 
 	<properties>
 		<java.version>11</java.version>
