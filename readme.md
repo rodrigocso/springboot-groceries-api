@@ -12,7 +12,7 @@
         <img src="https://img.shields.io/badge/Spring%20Boot-v2.4.1-6DB33F.svg" />
     </a>
     <a alt="Coverage">
-        <img src="https://img.shields.io/badge/coverage-95%25-31D843" />
+        <img src="https://img.shields.io/badge/coverage->90%25-31D843" />
     </a>
     <a alt="License">
         <img src="https://img.shields.io/badge/license-MIT-63B0CD.svg" />
@@ -57,15 +57,11 @@ using Angular. At the moment, the entities are:
 You can **Purchase** an **Item** at a **Store**. An **Item** is how you package a
 **Product** to be sold. A **Product** may or may not have an associated **Brand**.
 
-Future features may include:
-* Possibility to create a shopping list (with price ranges, subtotal estimation etc.)
-* Add categories to products to allocate grocery expenses
-
 ### Highlights ###
 This project showcases the usage of:
 * JPA Repositories with Hibernate
     * A custom repository extending the generated one
-    * Criteria API is used with a simple `INNER JOIN`
+    * JPA Criteria API is used with multiple joins
     * JPA Static Metamodel Generator (`get("field")` is not type safe)
 * H2 in memory database for automated tests
 * MariaDB as the data source
