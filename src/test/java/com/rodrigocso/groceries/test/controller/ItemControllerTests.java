@@ -7,6 +7,7 @@ import com.rodrigocso.groceries.exception.ControllerExceptionHandler;
 import com.rodrigocso.groceries.repository.ProductRepository;
 import com.rodrigocso.groceries.service.facade.ItemFacade;
 import com.rodrigocso.groceries.service.mapper.ItemMapper;
+import com.rodrigocso.groceries.service.mapper.ProductMapper;
 import com.rodrigocso.groceries.test.util.builder.ItemBuilder;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,12 +46,15 @@ public class ItemControllerTests {
     @Mock
     private ItemFacade itemFacade;
 
+    @Mock
+    private ProductMapper productMapper;
+
     @InjectMocks
     private ItemController itemController;
 
     @BeforeEach
     public void setup() {
-        itemMapper = new ItemMapper(productRepository);
+        itemMapper = new ItemMapper(productMapper, productRepository);
         JacksonTester.initFields(this, new ObjectMapper());
         mvc = MockMvcBuilders.standaloneSetup(itemController)
                 .setControllerAdvice(new ControllerExceptionHandler())

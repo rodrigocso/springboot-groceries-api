@@ -11,6 +11,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import javax.validation.Valid;
 
+@CrossOrigin
 @RestController
 @RequestMapping(path = "/brands")
 public class BrandController {

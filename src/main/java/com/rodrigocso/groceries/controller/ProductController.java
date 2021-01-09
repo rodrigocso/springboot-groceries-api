@@ -1,7 +1,6 @@
 package com.rodrigocso.groceries.controller;
 
 import com.rodrigocso.groceries.dto.ProductDto;
-import com.rodrigocso.groceries.repository.ProductRepository;
 import com.rodrigocso.groceries.service.facade.ProductFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,15 +12,14 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping(path = "/products")
 public class ProductController {
     private final ProductFacade productFacade;
-    private final ProductRepository productRepository;
 
-    public ProductController(ProductFacade productFacade, ProductRepository productRepository) {
+    public ProductController(ProductFacade productFacade) {
         this.productFacade = productFacade;
-        this.productRepository = productRepository;
     }
 
     @GetMapping
@@ -61,5 +59,11 @@ public class ProductController {
     @PutMapping(path = "/{id}")
     public ResponseEntity<ProductDto> update(@Valid @RequestBody ProductDto product, @PathVariable Long id) {
         return ResponseEntity.ok(productFacade.update(id, product));
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<ProductDto> delete(@PathVariable Long id) {
+        productFacade.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 }

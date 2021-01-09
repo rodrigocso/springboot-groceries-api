@@ -1,6 +1,7 @@
 package com.rodrigocso.groceries.controller;
 
 import com.rodrigocso.groceries.dto.ItemDto;
+import com.rodrigocso.groceries.dto.ItemResponse;
 import com.rodrigocso.groceries.service.facade.ItemFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.Valid;
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping(path = "/items")
 public class ItemController {
@@ -31,6 +33,11 @@ public class ItemController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
+    @GetMapping(path = "/search")
+    public ResponseEntity<List<ItemResponse>> findByBrandOrProductName(@RequestParam String brandOrProductName) {
+        return ResponseEntity.ok(itemFacade.findByBrandOrProductName(brandOrProductName));
+    }
+
     @GetMapping(path = "/product/{productId}")
     public ResponseEntity<List<ItemDto>> findByProductId(@PathVariable Long productId) {
         return itemFacade.findByProductId(productId)
@@ -46,5 +53,11 @@ public class ItemController {
     @PutMapping(path = "{id}")
     public ResponseEntity<ItemDto> update(@Valid @RequestBody ItemDto item, @PathVariable Long id) {
         return ResponseEntity.ok(itemFacade.update(id, item));
+    }
+
+    @DeleteMapping(path = "{id}")
+    public ResponseEntity<ItemDto> delete(@PathVariable Long id) {
+        itemFacade.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 }
