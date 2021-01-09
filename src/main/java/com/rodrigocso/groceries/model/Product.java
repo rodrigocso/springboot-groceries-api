@@ -12,7 +12,7 @@ public class Product {
     @NotBlank(message = "IS_REQUIRED")
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Brand brand;
 
     public Long getId() {
