@@ -3,10 +3,12 @@ package com.rodrigocso.groceries.test.service.facade;
 import com.rodrigocso.groceries.dto.ItemDto;
 import com.rodrigocso.groceries.model.Item;
 import com.rodrigocso.groceries.model.Product;
+import com.rodrigocso.groceries.repository.BrandRepository;
 import com.rodrigocso.groceries.repository.ItemRepository;
 import com.rodrigocso.groceries.repository.ProductRepository;
 import com.rodrigocso.groceries.service.facade.ItemFacade;
 import com.rodrigocso.groceries.service.mapper.ItemMapper;
+import com.rodrigocso.groceries.service.mapper.ProductMapper;
 import com.rodrigocso.groceries.test.util.builder.ItemBuilder;
 import com.rodrigocso.groceries.test.util.builder.ProductBuilder;
 import org.assertj.core.util.Lists;
@@ -28,12 +30,15 @@ public class ItemFacadeTests {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private BrandRepository brandRepository;
+
     private ItemFacade itemFacade;
     private ItemMapper itemMapper;
 
     @BeforeEach
     public void setup() {
-        itemMapper = new ItemMapper(productRepository);
+        itemMapper = new ItemMapper(new ProductMapper(brandRepository), productRepository);
         itemFacade = new ItemFacade(productRepository, itemMapper, itemRepository);
     }
 
