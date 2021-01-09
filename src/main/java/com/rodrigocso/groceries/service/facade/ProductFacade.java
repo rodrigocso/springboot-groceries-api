@@ -65,4 +65,11 @@ public class ProductFacade {
         }
         return productMapper.toDto(productRepository.save(productMapper.toProduct(dto)));
     }
+
+    public void deleteById(Long id) {
+        if (productRepository.findById(id).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        productRepository.deleteById(id);
+    }
 }

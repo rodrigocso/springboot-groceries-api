@@ -1,6 +1,7 @@
 package com.rodrigocso.groceries.service.facade;
 
 import com.rodrigocso.groceries.dto.ItemDto;
+import com.rodrigocso.groceries.dto.ItemResponse;
 import com.rodrigocso.groceries.model.Product;
 import com.rodrigocso.groceries.repository.ItemRepository;
 import com.rodrigocso.groceries.repository.ProductRepository;
@@ -44,6 +45,12 @@ public class ItemFacade {
                         .collect(Collectors.toList()));
     }
 
+    public List<ItemResponse> findByBrandOrProductName(String brandOrProductName) {
+        return itemRepository.findByBrandOrProductName(brandOrProductName).stream()
+                .map(itemMapper::toItemResponse)
+                .collect(Collectors.toList());
+    }
+
     public ItemDto create(ItemDto dto) {
         return itemMapper.toDto(itemRepository.save(itemMapper.toItem(dto)));
     }
@@ -56,5 +63,12 @@ public class ItemFacade {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         return itemMapper.toDto(itemRepository.save(itemMapper.toItem(dto)));
+    }
+
+    public void deleteById(Long id) {
+        if (itemRepository.findById(id).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        itemRepository.deleteById(id);
     }
 }
