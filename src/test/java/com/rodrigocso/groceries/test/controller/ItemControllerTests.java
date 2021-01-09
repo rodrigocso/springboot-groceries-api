@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 
 import static com.rodrigocso.groceries.test.util.ResponseBodyMatchers.responseBody;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -153,5 +153,12 @@ public class ItemControllerTests {
         mvc.perform(put("/items/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void canDelete() throws Exception {
+        mvc.perform(delete("/items/1"))
+                .andExpect(status().isOk());
+        verify(itemFacade, times(1)).deleteById(1L);
     }
 }

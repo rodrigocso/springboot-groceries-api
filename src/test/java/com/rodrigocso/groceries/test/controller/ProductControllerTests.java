@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 import static com.rodrigocso.groceries.test.util.ResponseBodyMatchers.responseBody;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -120,7 +120,7 @@ public class ProductControllerTests {
     }
 
     @Test
-    public void canCreateNewProduct() throws Exception {
+    public void canCreate() throws Exception {
         ProductDto dto = productMapper.toDto(ProductBuilder.builder().withId(1L).build());
         when(productFacade.create(any(ProductDto.class))).thenReturn(dto);
         mvc.perform(post("/products")
@@ -139,7 +139,7 @@ public class ProductControllerTests {
     }
 
     @Test
-    public void canUpdateProduct() throws Exception {
+    public void canUpdate() throws Exception {
         ProductDto dto = productMapper.toDto(ProductBuilder.builder().build());
         when(productFacade.update(any(Long.class), any(ProductDto.class))).thenReturn(dto);
         mvc.perform(put("/products/1")
@@ -156,5 +156,12 @@ public class ProductControllerTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonProduct.write(dto).getJson()))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void canDelete() throws Exception {
+        mvc.perform(delete("/products/1"))
+                .andExpect(status().isOk());
+        verify(productFacade, times(1)).deleteById(1L);
     }
 }

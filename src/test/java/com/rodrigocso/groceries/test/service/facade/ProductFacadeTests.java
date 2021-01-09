@@ -101,4 +101,11 @@ public class ProductFacadeTests {
 
         assertThat(productFacade.update(product.getId(), product).getName()).isEqualTo("Milk");
     }
+
+    @Test
+    public void canDelete() {
+        ProductDto product = productMapper.toDto(productRepository.save(ProductBuilder.builder().build()));
+        productFacade.deleteById(product.getId());
+        assertThat(productFacade.findAll().size()).isEqualTo(0);
+    }
 }
