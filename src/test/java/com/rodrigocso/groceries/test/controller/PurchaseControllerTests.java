@@ -8,6 +8,7 @@ import com.rodrigocso.groceries.exception.ControllerExceptionHandler;
 import com.rodrigocso.groceries.repository.ItemRepository;
 import com.rodrigocso.groceries.repository.StoreRepository;
 import com.rodrigocso.groceries.service.facade.PurchaseFacade;
+import com.rodrigocso.groceries.service.mapper.ItemMapper;
 import com.rodrigocso.groceries.service.mapper.PurchaseMapper;
 import com.rodrigocso.groceries.test.util.builder.PurchaseBuilder;
 import org.assertj.core.util.Lists;
@@ -22,6 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,6 +46,9 @@ public class PurchaseControllerTests {
     private PurchaseFacade purchaseFacade;
 
     @Mock
+    private ItemMapper itemMapper;
+
+    @Mock
     private ItemRepository itemRepository;
 
     @Mock
@@ -57,7 +62,7 @@ public class PurchaseControllerTests {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         JacksonTester.initFields(this, mapper);
-        purchaseMapper = new PurchaseMapper(storeRepository, itemRepository);
+        purchaseMapper = new PurchaseMapper(itemMapper, storeRepository, itemRepository);
         mvc = MockMvcBuilders.standaloneSetup(purchaseController)
                 .setControllerAdvice(new ControllerExceptionHandler())
                 .build();
@@ -123,5 +128,13 @@ public class PurchaseControllerTests {
         mvc.perform(delete("/purchases/1"))
                 .andExpect(status().isOk());
         verify(purchaseFacade, times(1)).deleteById(1L);
+    }
+
+    @Test
+    public void canFindByStoreIdAndTransactionDate() throws Exception {
+        mvc.perform(get("/purchases/store/1/20201212"))
+                .andExpect(status().isOk());
+        verify(purchaseFacade, times(1))
+                .findByStoreIdAndTransactionDate(1L, LocalDate.of(2020, 12, 12));
     }
 }

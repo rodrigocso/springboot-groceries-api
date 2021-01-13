@@ -1,13 +1,16 @@
 package com.rodrigocso.groceries.controller;
 
 import com.rodrigocso.groceries.dto.PurchaseDto;
+import com.rodrigocso.groceries.dto.PurchaseResponse;
 import com.rodrigocso.groceries.service.facade.PurchaseFacade;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 
 @CrossOrigin
@@ -37,6 +40,13 @@ public class PurchaseController {
         return purchaseFacade.findByProductId(productId)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping(path = "/store/{storeId}/{transactionDate}")
+    public ResponseEntity<List<PurchaseResponse>> findByStoreAndDate(
+            @PathVariable Long storeId,
+            @PathVariable @DateTimeFormat(pattern = "yyyyMMdd") LocalDate transactionDate) {
+        return ResponseEntity.ok(purchaseFacade.findByStoreIdAndTransactionDate(storeId, transactionDate));
     }
 
     @PostMapping

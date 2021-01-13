@@ -1,6 +1,7 @@
 package com.rodrigocso.groceries.service.mapper;
 
 import com.rodrigocso.groceries.dto.PurchaseDto;
+import com.rodrigocso.groceries.dto.PurchaseResponse;
 import com.rodrigocso.groceries.model.Purchase;
 import com.rodrigocso.groceries.repository.ItemRepository;
 import com.rodrigocso.groceries.repository.StoreRepository;
@@ -8,12 +9,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PurchaseMapper {
-    private final StoreRepository storeRepository;
+    private final ItemMapper itemMapper;
     private final ItemRepository itemRepository;
+    private final StoreRepository storeRepository;
 
-    public PurchaseMapper(StoreRepository storeRepository, ItemRepository itemRepository) {
-        this.storeRepository = storeRepository;
+    public PurchaseMapper(ItemMapper itemMapper, StoreRepository storeRepository, ItemRepository itemRepository) {
+        this.itemMapper = itemMapper;
         this.itemRepository = itemRepository;
+        this.storeRepository = storeRepository;
     }
 
     public PurchaseDto toDto(Purchase purchase) {
@@ -40,5 +43,15 @@ public class PurchaseMapper {
         purchase.setStore(storeRepository.findById(dto.getStoreId()).orElse(null));
         purchase.setItem(itemRepository.findById(dto.getItemId()).orElse(null));
         return purchase;
+    }
+
+    public PurchaseResponse toPurchaseResponse(Purchase purchase) {
+        PurchaseResponse dto = new PurchaseResponse();
+        dto.setId(purchase.getId());
+        dto.setStoreId(purchase.getStore().getId());
+        dto.setItem(itemMapper.toItemResponse(purchase.getItem()));
+        dto.setQuantity(purchase.getQuantity());
+        dto.setPrice(purchase.getPrice());
+        return dto;
     }
 }

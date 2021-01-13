@@ -1,6 +1,7 @@
 package com.rodrigocso.groceries.service.facade;
 
 import com.rodrigocso.groceries.dto.PurchaseDto;
+import com.rodrigocso.groceries.dto.PurchaseResponse;
 import com.rodrigocso.groceries.repository.ProductRepository;
 import com.rodrigocso.groceries.repository.PurchaseRepository;
 import com.rodrigocso.groceries.service.mapper.PurchaseMapper;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -41,6 +43,12 @@ public class PurchaseFacade {
                 .map(purchases -> purchases.stream()
                         .map(purchaseMapper::toDto)
                         .collect(Collectors.toList()));
+    }
+
+    public List<PurchaseResponse> findByStoreIdAndTransactionDate(Long storeId, LocalDate transactionDate) {
+        return purchaseRepository.findByStoreIdAndTransactionDate(storeId, transactionDate).stream()
+                .map(purchaseMapper::toPurchaseResponse)
+                .collect(Collectors.toList());
     }
 
     public PurchaseDto create(PurchaseDto dto) {
