@@ -2,9 +2,11 @@ package com.rodrigocso.groceries.service.facade;
 
 import com.rodrigocso.groceries.dto.ProductDto;
 import com.rodrigocso.groceries.model.Brand;
+import com.rodrigocso.groceries.model.Product;
 import com.rodrigocso.groceries.repository.BrandRepository;
 import com.rodrigocso.groceries.repository.ProductRepository;
 import com.rodrigocso.groceries.service.mapper.ProductMapper;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -50,6 +52,13 @@ public class ProductFacade {
                 .map(products -> products.stream()
                         .map(productMapper::toDto)
                         .collect(Collectors.toList()));
+    }
+
+    public List<Product> findByBrandIdAndNameContaining(Long brandId, String partialName) {
+        Sort.TypedSort<Product> product = Sort.sort(Product.class);
+        Sort sort = product.by(Product::getName).ascending();
+
+        return productRepository.findFirst10ByBrandIdAndNameContainingIgnoreCase(brandId, partialName, sort);
     }
 
     public ProductDto create(ProductDto dto) {

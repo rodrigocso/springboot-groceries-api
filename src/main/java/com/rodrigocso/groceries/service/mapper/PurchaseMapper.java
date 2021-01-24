@@ -49,7 +49,7 @@ public class PurchaseMapper {
         PurchaseResponse dto = new PurchaseResponse();
         dto.setId(purchase.getId());
         dto.setStoreId(purchase.getStore().getId());
-        dto.setItem(itemMapper.toItemResponse(purchase.getItem()));
+        dto.setItem(purchase.getItem());
         dto.setQuantity(purchase.getQuantity());
         dto.setPrice(purchase.getPrice());
         return dto;

@@ -1,7 +1,6 @@
 package com.rodrigocso.groceries.service.mapper;
 
 import com.rodrigocso.groceries.dto.ItemDto;
-import com.rodrigocso.groceries.dto.ItemResponse;
 import com.rodrigocso.groceries.model.Item;
 import com.rodrigocso.groceries.repository.ProductRepository;
 import org.springframework.stereotype.Component;
@@ -34,14 +33,5 @@ public class ItemMapper {
         item.setPackageSize(dto.getPackageSize());
         item.setUnit(dto.getUnit());
         return item;
-    }
-
-    public ItemResponse toItemResponse(Item item) {
-        ItemResponse dto = new ItemResponse();
-        dto.setId(item.getId());
-        dto.setProduct(productMapper.toProductResponse(item.getProduct()));
-        dto.setPackageSize(item.getPackageSize());
-        dto.setUnit(item.getUnit());
-        return dto;
     }
 }

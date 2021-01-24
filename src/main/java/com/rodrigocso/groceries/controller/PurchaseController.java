@@ -2,6 +2,7 @@ package com.rodrigocso.groceries.controller;
 
 import com.rodrigocso.groceries.dto.PurchaseDto;
 import com.rodrigocso.groceries.dto.PurchaseResponse;
+import com.rodrigocso.groceries.model.Purchase;
 import com.rodrigocso.groceries.service.facade.PurchaseFacade;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;

@@ -1,6 +1,7 @@
 package com.rodrigocso.groceries.controller;
 
 import com.rodrigocso.groceries.dto.ProductDto;
+import com.rodrigocso.groceries.model.Product;
 import com.rodrigocso.groceries.service.facade.ProductFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +45,12 @@ public class ProductController {
         return productFacade.findByBrandId(brandId)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping(path = "/brand/{brandId}/search")
+    public ResponseEntity<List<Product>> findByBrandIdAndProductName(@PathVariable Long brandId,
+                                                                     @RequestParam String partialName) {
+        return ResponseEntity.ok(productFacade.findByBrandIdAndNameContaining(brandId, partialName));
     }
 
     @PostMapping

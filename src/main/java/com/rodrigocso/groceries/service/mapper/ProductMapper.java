@@ -1,7 +1,6 @@
 package com.rodrigocso.groceries.service.mapper;
 
 import com.rodrigocso.groceries.dto.ProductDto;
-import com.rodrigocso.groceries.dto.ProductResponse;
 import com.rodrigocso.groceries.model.Product;
 import com.rodrigocso.groceries.repository.BrandRepository;
 import org.springframework.stereotype.Component;
@@ -32,13 +31,5 @@ public class ProductMapper {
             product.setBrand(brandRepository.findById(dto.getBrandId()).orElse(null));
         }
         return product;
-    }
-
-    public ProductResponse toProductResponse(Product product) {
-        ProductResponse dto = new ProductResponse();
-        dto.setId(product.getId());
-        dto.setBrand(product.getBrand());
-        dto.setName(product.getName());
-        return dto;
     }
 }

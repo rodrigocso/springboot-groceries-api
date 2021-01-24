@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rodrigocso.groceries.controller.ProductController;
 import com.rodrigocso.groceries.dto.ProductDto;
 import com.rodrigocso.groceries.exception.ControllerExceptionHandler;
+import com.rodrigocso.groceries.model.Product;
 import com.rodrigocso.groceries.repository.BrandRepository;
 import com.rodrigocso.groceries.service.facade.ProductFacade;
 import com.rodrigocso.groceries.service.mapper.ProductMapper;
@@ -34,8 +35,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ProductControllerTests {
     private MockMvc mvc;
     private ProductMapper productMapper;
-    private JacksonTester<ProductDto> jsonProduct;
-    private JacksonTester<List<ProductDto>> jsonProductList;
+    private JacksonTester<ProductDto> jsonProductDto;
+    private JacksonTester<Product> jsonProduct;
+    private JacksonTester<List<ProductDto>> jsonProductDtoList;
 
     @Mock
     private BrandRepository brandRepository;
@@ -66,7 +68,7 @@ public class ProductControllerTests {
 
         mvc.perform(get("/products"))
                 .andExpect(status().isOk())
-                .andExpect(responseBody().isEqualTo(jsonProductList.write(products).getJson()));
+                .andExpect(responseBody().isEqualTo(jsonProductDtoList.write(products).getJson()));
     }
 
     @Test
@@ -75,7 +77,7 @@ public class ProductControllerTests {
         when(productFacade.findById(1L)).thenReturn(Optional.of(product));
         mvc.perform(get("/products/1"))
                 .andExpect(status().isOk())
-                .andExpect(responseBody().isEqualTo(jsonProduct.write(product).getJson()));
+                .andExpect(responseBody().isEqualTo(jsonProductDto.write(product).getJson()));
     }
 
     @Test
@@ -97,7 +99,7 @@ public class ProductControllerTests {
         mvc.perform(get("/products/search")
                 .param("name", "query"))
                 .andExpect(status().isOk())
-                .andExpect(responseBody().isEqualTo(jsonProductList.write(products).getJson()));
+                .andExpect(responseBody().isEqualTo(jsonProductDtoList.write(products).getJson()));
     }
 
     @Test
@@ -110,7 +112,7 @@ public class ProductControllerTests {
         when(productFacade.findByBrandId(1L)).thenReturn(Optional.of(products));
         mvc.perform(get("/products/brand/1"))
                 .andExpect(status().isOk())
-                .andExpect(responseBody().isEqualTo(jsonProductList.write(products).getJson()));
+                .andExpect(responseBody().isEqualTo(jsonProductDtoList.write(products).getJson()));
     }
 
     @Test
@@ -125,7 +127,7 @@ public class ProductControllerTests {
         when(productFacade.create(any(ProductDto.class))).thenReturn(dto);
         mvc.perform(post("/products")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonProduct.write(dto).getJson()))
+                .content(jsonProductDto.write(dto).getJson()))
                 .andExpect(status().isCreated());
     }
 
@@ -134,7 +136,7 @@ public class ProductControllerTests {
         ProductDto dto = productMapper.toDto(ProductBuilder.builder().withName("").build());
         mvc.perform(post("/products")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonProduct.write(dto).getJson()))
+                .content(jsonProductDto.write(dto).getJson()))
                 .andExpect(status().isBadRequest());
     }
 
@@ -144,9 +146,9 @@ public class ProductControllerTests {
         when(productFacade.update(any(Long.class), any(ProductDto.class))).thenReturn(dto);
         mvc.perform(put("/products/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonProduct.write(dto).getJson()))
+                .content(jsonProductDto.write(dto).getJson()))
                 .andExpect(status().isOk())
-                .andExpect(responseBody().isEqualTo(jsonProduct.write(dto).getJson()));
+                .andExpect(responseBody().isEqualTo(jsonProductDto.write(dto).getJson()));
     }
 
     @Test
@@ -154,7 +156,7 @@ public class ProductControllerTests {
         ProductDto dto = productMapper.toDto(ProductBuilder.builder().withName("").build());
         mvc.perform(put("/products/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonProduct.write(dto).getJson()))
+                .content(jsonProductDto.write(dto).getJson()))
                 .andExpect(status().isBadRequest());
     }
 

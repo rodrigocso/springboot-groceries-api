@@ -23,7 +23,7 @@ public class Purchase {
 
     @NotNull
     @PastOrPresent
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyyMMdd")
     private LocalDate transactionDate;
 
     @NotNull

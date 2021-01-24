@@ -8,7 +8,7 @@ public class PurchaseResponse {
     private Long id;
     private Long storeId;
     private LocalDate transactionDate;
-    private ItemResponse item;
+    private Item item;
     private Float quantity;
     private Float price;
 
@@ -36,11 +36,11 @@ public class PurchaseResponse {
         this.transactionDate = transactionDate;
     }
 
-    public ItemResponse getItem() {
+    public Item getItem() {
         return item;
     }
 
-    public void setItem(ItemResponse item) {
+    public void setItem(Item item) {
         this.item = item;
     }
 

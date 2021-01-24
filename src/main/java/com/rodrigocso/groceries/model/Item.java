@@ -13,7 +13,7 @@ public class Item {
     private Long id;
 
     @NotNull(message = "IS_REQUIRED")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Product product;
 
     @NotNull(message = "IS_REQUIRED")

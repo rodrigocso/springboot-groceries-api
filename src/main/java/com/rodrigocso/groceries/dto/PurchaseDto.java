@@ -15,7 +15,7 @@ public class PurchaseDto {
 
     @NotNull(message = "IS_REQUIRED")
     @PastOrPresent(message = "NO_FUTURE_DATE")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyyMMdd")
     private LocalDate transactionDate;
 
     @NotNull(message = "IS_REQUIRED")

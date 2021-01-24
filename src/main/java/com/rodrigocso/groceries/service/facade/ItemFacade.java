@@ -1,7 +1,7 @@
 package com.rodrigocso.groceries.service.facade;
 
 import com.rodrigocso.groceries.dto.ItemDto;
-import com.rodrigocso.groceries.dto.ItemResponse;
+import com.rodrigocso.groceries.model.Item;
 import com.rodrigocso.groceries.model.Product;
 import com.rodrigocso.groceries.repository.ItemRepository;
 import com.rodrigocso.groceries.repository.ProductRepository;
@@ -45,10 +45,8 @@ public class ItemFacade {
                         .collect(Collectors.toList()));
     }
 
-    public List<ItemResponse> findByBrandOrProductName(String brandOrProductName) {
-        return itemRepository.findByBrandOrProductName(brandOrProductName).stream()
-                .map(itemMapper::toItemResponse)
-                .collect(Collectors.toList());
+    public List<Item> findByBrandOrProductName(String brandOrProductName) {
+        return itemRepository.findByBrandOrProductName(brandOrProductName);
     }
 
     public ItemDto create(ItemDto dto) {

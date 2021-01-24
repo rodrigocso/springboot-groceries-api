@@ -1,7 +1,7 @@
 package com.rodrigocso.groceries.controller;
 
 import com.rodrigocso.groceries.dto.ItemDto;
-import com.rodrigocso.groceries.dto.ItemResponse;
+import com.rodrigocso.groceries.model.Item;
 import com.rodrigocso.groceries.service.facade.ItemFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +34,7 @@ public class ItemController {
     }
 
     @GetMapping(path = "/search")
-    public ResponseEntity<List<ItemResponse>> findByBrandOrProductName(@RequestParam String brandOrProductName) {
+    public ResponseEntity<List<Item>> findByBrandOrProductName(@RequestParam String brandOrProductName) {
         return ResponseEntity.ok(itemFacade.findByBrandOrProductName(brandOrProductName));
     }
 
