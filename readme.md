@@ -44,8 +44,8 @@ For this project, the following design guidelines were adopted:
 * Ample automated testing (> 90% code coverage)
 
 ## Application ##
-This application will serve as the backend for a groceries price tracking app to be created
-using Angular. At the moment, the entities are:
+This application serves as the backend for [Groceries Tracker](https://github.com/rodrigocso/groceries-tracker).
+At the moment, the entities are:
 * **Store** (name and location)
 * **Brand** (name)
 * **Product** (name and **Brand**)
